@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Authentication Functions
 function loginWithTwitch() {
+    // Make sure mock users are initialized
+    initializeMockUsers();
+    
     const selectedUser = document.getElementById('userSelector')?.value || 'random';
     
     if (selectedUser === 'random') {
@@ -35,22 +38,23 @@ function loginWithTwitch() {
             currentUser = existingUser;
         }
     } else {
-        // Use selected test user
+        // Use selected test user - search in users array
         const existingUser = users.find(u => u.username === selectedUser);
         if (existingUser) {
             currentUser = existingUser;
+            console.log(`Logged in as: ${currentUser.username} (${currentUser.role})`);
         } else {
-            // Fallback to random user if selected user not found
-            const mockUser = {
+            console.error(`User ${selectedUser} not found in users array`);
+            // Create the selected user if it doesn't exist (shouldn't happen with predefined users)
+            currentUser = {
                 id: 'twitch_' + Date.now(),
-                username: 'Streamer_' + Math.floor(Math.random() * 1000),
-                avatar: `https://picsum.photos/seed/${Date.now()}/200/200.jpg`,
-                points: 1000,
+                username: selectedUser,
+                avatar: `https://picsum.photos/seed/${selectedUser}/200/200.jpg`,
+                points: selectedUser.includes('Admin') ? 10000 : 1000,
                 gamesPlayed: 0,
-                role: 'user'
+                role: selectedUser.includes('Admin') ? 'admin' : 'user'
             };
-            currentUser = mockUser;
-            users.push(mockUser);
+            users.push(currentUser);
         }
     }
     
@@ -88,6 +92,14 @@ function updateUI() {
         document.getElementById('dropdownAvatar').src = currentUser.avatar;
         document.getElementById('dropdownUserName').textContent = currentUser.username;
         document.getElementById('dropdownUserRole').textContent = getRoleDisplayName(currentUser.role);
+        
+        // Show/hide admin buttons
+        const adminButtons = document.querySelectorAll('.admin-only');
+        if (isAdmin()) {
+            adminButtons.forEach(btn => btn.classList.remove('hidden'));
+        } else {
+            adminButtons.forEach(btn => btn.classList.add('hidden'));
+        }
     }
 }
 
@@ -100,6 +112,8 @@ function showSection(section) {
     document.getElementById('leaderboardSection').classList.add('hidden');
     document.getElementById('gamesSection').classList.add('hidden');
     document.getElementById('gameContainer').classList.add('hidden');
+    document.getElementById('adminSection').classList.add('hidden');
+    document.getElementById('overlaySection').classList.add('hidden');
     
     // Show requested section
     switch(section) {
@@ -119,6 +133,18 @@ function showSection(section) {
             break;
         case 'games':
             document.getElementById('gamesSection').classList.remove('hidden');
+            break;
+        case 'admin':
+            if (isAdmin()) {
+                document.getElementById('adminSection').classList.remove('hidden');
+                loadAdminPanel();
+            }
+            break;
+        case 'overlay':
+            if (isAdmin()) {
+                // Open overlay index.html directly
+                window.open('./overlay/index.html', '_blank');
+            }
             break;
     }
 }
@@ -186,7 +212,11 @@ function saveUserData() {
 
 // Initialize mock users for demo
 function initializeMockUsers() {
-    if (users.length === 0) {
+    // Always ensure admin users exist
+    const adminExists = users.some(u => u.username === 'Admin_Miguel');
+    const secaExists = users.some(u => u.username === 'o_seca_adegas_95');
+    
+    if (users.length === 0 || !adminExists || !secaExists) {
         const mockUsers = [
             { 
                 id: '1', 
@@ -240,7 +270,18 @@ function initializeMockUsers() {
         users = mockUsers;
         localStorage.setItem('users', JSON.stringify(users));
         updateStats();
+        console.log('Mock users initialized:', users.map(u => `${u.username} (${u.role})`));
     }
+}
+
+// Debug function to reset everything
+function resetUserData() {
+    localStorage.removeItem('users');
+    localStorage.removeItem('currentUser');
+    users = [];
+    currentUser = null;
+    initializeMockUsers();
+    console.log('User data reset. Available users:', users.map(u => `${u.username} (${u.role})`));
 }
 
 // Permission check functions
@@ -1275,3 +1316,226 @@ function closeModal(button) {
         document.body.removeChild(modal);
     }
 }
+
+// ================================
+// ADMIN FUNCTIONS
+// ================================
+
+// Check if current user is admin
+function isAdmin() {
+    if (!currentUser) return false;
+    return currentUser.role === 'admin' || 
+           currentUser.username === 'Admin_Miguel' || 
+           currentUser.username === 'o_seca_adegas_95';
+}
+
+// Load admin panel data
+function loadAdminPanel() {
+    populateUserSelector();
+    updateAdminStats();
+}
+
+// Populate user selector dropdown
+function populateUserSelector() {
+    const selector = document.getElementById('adminUserSelector');
+    selector.innerHTML = '<option value="">Select a user...</option>';
+    
+    users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.username;
+        option.textContent = `${user.username} (${user.points} pts)`;
+        selector.appendChild(option);
+    });
+    
+    selector.addEventListener('change', function() {
+        if (this.value) {
+            loadUserForEdit(this.value);
+        } else {
+            document.getElementById('userEditPanel').classList.add('hidden');
+        }
+    });
+}
+
+// Load user data for editing
+function loadUserForEdit(username) {
+    const user = users.find(u => u.username === username);
+    if (!user) return;
+    
+    document.getElementById('editUsername').textContent = user.username;
+    document.getElementById('editUserRole').textContent = getRoleDisplayName(user.role);
+    document.getElementById('editGamesPlayed').textContent = user.gamesPlayed || 0;
+    document.getElementById('editCurrentPoints').textContent = user.points || 0;
+    
+    document.getElementById('userEditPanel').classList.remove('hidden');
+}
+
+// Add points to selected user
+function addPoints() {
+    const username = document.getElementById('adminUserSelector').value;
+    const pointsToAdd = parseInt(document.getElementById('pointsInput').value) || 0;
+    
+    if (!username || pointsToAdd <= 0) {
+        alert('Please select a user and enter a valid amount of points to add.');
+        return;
+    }
+    
+    const user = users.find(u => u.username === username);
+    if (user) {
+        user.points = (user.points || 0) + pointsToAdd;
+        saveUsersData();
+        loadUserForEdit(username);
+        document.getElementById('pointsInput').value = '';
+        showAdminNotification(`Added ${pointsToAdd} points to ${username}`, 'success');
+    }
+}
+
+// Remove points from selected user
+function removePoints() {
+    const username = document.getElementById('adminUserSelector').value;
+    const pointsToRemove = parseInt(document.getElementById('pointsInput').value) || 0;
+    
+    if (!username || pointsToRemove <= 0) {
+        alert('Please select a user and enter a valid amount of points to remove.');
+        return;
+    }
+    
+    const user = users.find(u => u.username === username);
+    if (user) {
+        user.points = Math.max(0, (user.points || 0) - pointsToRemove);
+        saveUsersData();
+        loadUserForEdit(username);
+        document.getElementById('pointsInput').value = '';
+        showAdminNotification(`Removed ${pointsToRemove} points from ${username}`, 'warning');
+    }
+}
+
+// Set exact points for selected user
+function setPoints() {
+    const username = document.getElementById('adminUserSelector').value;
+    const exactPoints = parseInt(document.getElementById('setPointsInput').value) || 0;
+    
+    if (!username || exactPoints < 0) {
+        alert('Please select a user and enter a valid amount of points.');
+        return;
+    }
+    
+    const user = users.find(u => u.username === username);
+    if (user) {
+        user.points = exactPoints;
+        saveUsersData();
+        loadUserForEdit(username);
+        document.getElementById('setPointsInput').value = '';
+        showAdminNotification(`Set ${username}'s points to ${exactPoints}`, 'info');
+    }
+}
+
+// Update admin statistics
+function updateAdminStats() {
+    const totalUsers = users.length;
+    const totalPoints = users.reduce((sum, user) => sum + (user.points || 0), 0);
+    const totalGames = users.reduce((sum, user) => sum + (user.gamesPlayed || 0), 0);
+    
+    document.getElementById('adminTotalUsers').textContent = totalUsers;
+    document.getElementById('adminTotalPoints').textContent = totalPoints.toLocaleString();
+    document.getElementById('adminTotalGames').textContent = totalGames;
+}
+
+// Save users data and update current user if needed
+function saveUsersData() {
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    // Update current user data if they were edited
+    if (currentUser) {
+        const updatedCurrentUser = users.find(u => u.username === currentUser.username);
+        if (updatedCurrentUser) {
+            currentUser = updatedCurrentUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateUI();
+        }
+    }
+    
+    updateAdminStats();
+}
+
+// Show admin notification
+function showAdminNotification(message, type = 'info') {
+    const colors = {
+        success: 'bg-green-600',
+        warning: 'bg-yellow-600',
+        error: 'bg-red-600',
+        info: 'bg-blue-600'
+    };
+    
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-lg z-50`;
+    notification.innerHTML = `
+        <div class="flex items-center space-x-3">
+            <div class="text-2xl">⚙️</div>
+            <div>
+                <div class="font-bold">Admin Action</div>
+                <div class="text-sm opacity-90">${message}</div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// ================================
+// OVERLAY FUNCTIONS
+// ================================
+
+// Update overlay preview
+function updateOverlay() {
+    const game = document.getElementById('currentGame').value || 'Slots';
+    const balance = document.getElementById('sessionBalance').value || '+€500';
+    
+    document.getElementById('previewGame').textContent = game;
+    document.getElementById('previewBalance').textContent = balance;
+    
+    // Update balance color based on positive/negative
+    const balanceElement = document.getElementById('previewBalance');
+    if (balance.startsWith('+')) {
+        balanceElement.className = 'text-green-400';
+    } else if (balance.startsWith('-')) {
+        balanceElement.className = 'text-red-400';
+    } else {
+        balanceElement.className = 'text-gray-300';
+    }
+    
+    showAdminNotification('Overlay updated successfully!', 'success');
+}
+
+// Auto-update overlay inputs
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-update preview when inputs change
+    const gameInput = document.getElementById('currentGame');
+    const balanceInput = document.getElementById('sessionBalance');
+    
+    if (gameInput) {
+        gameInput.addEventListener('input', function() {
+            document.getElementById('previewGame').textContent = this.value || 'Slots';
+        });
+    }
+    
+    if (balanceInput) {
+        balanceInput.addEventListener('input', function() {
+            const balance = this.value || '+€500';
+            const balanceElement = document.getElementById('previewBalance');
+            balanceElement.textContent = balance;
+            
+            if (balance.startsWith('+')) {
+                balanceElement.className = 'text-green-400';
+            } else if (balance.startsWith('-')) {
+                balanceElement.className = 'text-red-400';
+            } else {
+                balanceElement.className = 'text-gray-300';
+            }
+        });
+    }
+});

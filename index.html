@@ -35,6 +35,16 @@
                             <span class="text-lg">🎮</span>
                             <span>Jogos</span>
                         </button>
+                        
+                        <!-- Admin Only Buttons -->
+                        <button id="adminControlBtn" onclick="showSection('admin')" class="nav-btn admin-only hidden flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-700 hover:bg-red-600 text-gray-300 hover:text-white transition-all duration-200 font-medium">
+                            <span class="text-lg">⚙️</span>
+                            <span>Control Panel</span>
+                        </button>
+                        <button id="adminOverlayBtn" onclick="showSection('overlay')" class="nav-btn admin-only hidden flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-700 hover:bg-orange-600 text-gray-300 hover:text-white transition-all duration-200 font-medium">
+                            <span class="text-lg">📺</span>
+                            <span>Overlay</span>
+                        </button>
                     </div>
                     
                     <!-- User Profile -->
@@ -196,7 +206,7 @@
         <div id="mainSection" class="hidden">
             <!-- Personal Introduction Section -->
             <div class="mb-12 pt-16">
-                <div class="max-w-4xl mx-auto bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-4 border border-gray-600 card-hover">
+                <div class="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-4 border border-gray-600 card-hover">
                     <div class="md:flex items-center gap-4">
                         <!-- Profile Picture -->
                         <div class="md:w-1/3 flex justify-center mb-3 md:mb-0">
@@ -434,24 +444,6 @@
                 </div>
             </div>
 
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <div class="glass-effect rounded-xl p-6 text-center">
-                    <div class="text-4xl mb-2">🏆</div>
-                    <h4 class="text-2xl font-bold text-purple-400" id="totalPlayers">0</h4>
-                    <p class="text-gray-300">Jogadores Ativos</p>
-                </div>
-                <div class="glass-effect rounded-xl p-6 text-center">
-                    <div class="text-4xl mb-2">💰</div>
-                    <h4 class="text-2xl font-bold text-green-400" id="totalPoints">0</h4>
-                    <p class="text-gray-300">Pontos em Circulação</p>
-                </div>
-                <div class="glass-effect rounded-xl p-6 text-center">
-                    <div class="text-4xl mb-2">🎮</div>
-                    <h4 class="text-2xl font-bold text-blue-400" id="gamesPlayed">0</h4>
-                    <p class="text-gray-300">Jogos Jogados Hoje</p>
-                </div>
-            </div>
         </div>
 
         <!-- Leaderboard Section -->
@@ -509,6 +501,134 @@
             </div>
         </div>
     </main>
+
+    <!-- Admin Control Panel Section -->
+    <div id="adminSection" class="hidden p-8">
+        <h2 class="text-4xl font-bold text-center mb-12 gradient-text">🔧 Admin Control Panel</h2>
+        
+        <!-- User Management -->
+        <div class="mb-12">
+            <h3 class="text-2xl font-bold mb-6 text-white">👥 User Management</h3>
+            <div class="bg-gray-800 rounded-2xl p-6 border border-gray-600">
+                <div class="mb-4">
+                    <label class="block text-gray-300 text-sm font-bold mb-2">Select User to Edit:</label>
+                    <select id="adminUserSelector" class="w-full md:w-1/3 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white">
+                        <option value="">Select a user...</option>
+                    </select>
+                </div>
+                
+                <div id="userEditPanel" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h4 class="text-lg font-bold text-white mb-3">User Info</h4>
+                            <div class="space-y-2">
+                                <p class="text-gray-300">Username: <span id="editUsername" class="text-white font-bold"></span></p>
+                                <p class="text-gray-300">Role: <span id="editUserRole" class="text-white font-bold"></span></p>
+                                <p class="text-gray-300">Games Played: <span id="editGamesPlayed" class="text-white font-bold"></span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h4 class="text-lg font-bold text-white mb-3">Edit Points</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-bold mb-1">Current Points:</label>
+                                    <span id="editCurrentPoints" class="text-2xl font-bold text-green-400"></span>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-bold mb-1">Add/Remove Points:</label>
+                                    <div class="flex space-x-2">
+                                        <input type="number" id="pointsInput" class="bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white w-32" placeholder="0">
+                                        <button onclick="addPoints()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white font-bold">Add</button>
+                                        <button onclick="removePoints()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-bold">Remove</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 text-sm font-bold mb-1">Set Exact Points:</label>
+                                    <div class="flex space-x-2">
+                                        <input type="number" id="setPointsInput" class="bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white w-32" placeholder="0">
+                                        <button onclick="setPoints()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-white font-bold">Set</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Stats -->
+        <div class="mb-12">
+            <h3 class="text-2xl font-bold mb-6 text-white">📊 System Statistics</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-800 rounded-xl p-6 text-center border border-gray-600">
+                    <div class="text-4xl mb-2">👥</div>
+                    <h4 class="text-2xl font-bold text-blue-400" id="adminTotalUsers">0</h4>
+                    <p class="text-gray-300">Total Users</p>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-6 text-center border border-gray-600">
+                    <div class="text-4xl mb-2">💰</div>
+                    <h4 class="text-2xl font-bold text-green-400" id="adminTotalPoints">0</h4>
+                    <p class="text-gray-300">Total Points Distributed</p>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-6 text-center border border-gray-600">
+                    <div class="text-4xl mb-2">🎮</div>
+                    <h4 class="text-2xl font-bold text-purple-400" id="adminTotalGames">0</h4>
+                    <p class="text-gray-300">Total Games Played</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Overlay Section (Admin Only) -->
+    <div id="overlaySection" class="hidden p-8">
+        <h2 class="text-4xl font-bold text-center mb-12 gradient-text">📺 Stream Overlay</h2>
+        
+        <div class="bg-gray-800 rounded-2xl p-6 border border-gray-600">
+            <h3 class="text-2xl font-bold mb-6 text-white">🎥 Overlay Configuration</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h4 class="text-lg font-bold text-white mb-3">Current Stream Info</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-gray-300 text-sm font-bold mb-1">Stream Title:</label>
+                            <input type="text" id="streamTitle" class="w-full bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white" placeholder="Amazing Casino Session!">
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm font-bold mb-1">Current Game:</label>
+                            <input type="text" id="currentGame" class="w-full bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white" placeholder="Slots">
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm font-bold mb-1">Session Balance:</label>
+                            <input type="text" id="sessionBalance" class="w-full bg-gray-600 border border-gray-500 rounded px-3 py-2 text-white" placeholder="+€500">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h4 class="text-lg font-bold text-white mb-3">Overlay Preview</h4>
+                    <div class="bg-black rounded-lg p-4 min-h-32">
+                        <div class="text-white text-sm space-y-1">
+                            <div class="flex justify-between">
+                                <span>🎰 Game:</span>
+                                <span id="previewGame">Slots</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>💰 Session:</span>
+                                <span id="previewBalance" class="text-green-400">+€500</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>👥 Viewers:</span>
+                                <span id="previewViewers">42</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="updateOverlay()" class="w-full mt-3 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-white font-bold">Update Overlay</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-gray-800 border-t border-gray-700 mt-16">
