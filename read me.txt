@@ -1,0 +1,34 @@
+📁 File Structure
+1. streamer-hub.html (Main HTML)
+Clean HTML structure with semantic markup
+Links to external CSS and JavaScript files
+All the navigation, sections, and game containers
+No inline styles or scripts
+2. styles.css (Stylesheet)
+All CSS styles organized by sections:
+Global styles and fonts
+Glass effects and gradients
+Game card animations
+Hover effects and transitions
+Leaderboard styles
+Points animations
+3. main.js (Core Functionality)
+Authentication system
+Navigation between sections
+User management and statistics
+Leaderboard functionality
+Utility functions (animations, data saving)
+Mock user initialization
+4. games.js (Game Logic)
+Plinko Game: Ball physics, peg collisions, multipliers
+Blackjack Game: Deck management, card logic, dealer AI
+Mines Game: Grid system, mine placement, risk/reward mechanics
+All game-specific functions and variables
+🎯 Benefits of This Structure
+Maintainability: Each file has a specific purpose
+Debugging: Easier to find and fix issues
+Performance: Better caching and loading
+Collaboration: Multiple developers can work on different files
+Scalability: Easy to add new games or features
+🚀 To Use
+Simply open streamer-hub.html in your browser and ensure all files are in the same directory. The functionality remains exactly the same as your original file, just much more organized!
