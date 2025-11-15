@@ -78,9 +78,16 @@ function updateUI() {
         document.getElementById('topNavButtons').classList.remove('hidden');
         document.getElementById('loginBtn').classList.add('hidden');
         document.getElementById('navigationMenu').classList.add('hidden'); // Hide floating nav
+        
+        // Update main profile display
         document.getElementById('userAvatar').src = currentUser.avatar;
         document.getElementById('userName').textContent = getUserRoleDisplay() + ' ' + currentUser.username;
         document.getElementById('userPoints').textContent = currentUser.points;
+        
+        // Update dropdown profile display
+        document.getElementById('dropdownAvatar').src = currentUser.avatar;
+        document.getElementById('dropdownUserName').textContent = currentUser.username;
+        document.getElementById('dropdownUserRole').textContent = getRoleDisplayName(currentUser.role);
     }
 }
 
@@ -163,11 +170,17 @@ function showPointsAnimation(amount, positive) {
 }
 
 function saveUserData() {
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    const userIndex = users.findIndex(u => u.id === currentUser.id);
-    if (userIndex !== -1) {
-        users[userIndex] = currentUser;
-        localStorage.setItem('users', JSON.stringify(users));
+    if (currentUser) {
+        // Initialize history arrays if they don't exist
+        if (!currentUser.gameHistory) currentUser.gameHistory = [];
+        if (!currentUser.pointsHistory) currentUser.pointsHistory = [];
+        
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        const userIndex = users.findIndex(u => u.id === currentUser.id);
+        if (userIndex !== -1) {
+            users[userIndex] = currentUser;
+            localStorage.setItem('users', JSON.stringify(users));
+        }
     }
 }
 
@@ -243,6 +256,46 @@ function getUserRoleDisplay() {
         user: '👤'
     };
     return roleEmojis[currentUser.role] || roleEmojis.user;
+}
+
+// History tracking functions
+function addGameHistory(gameName, result, pointsEarned) {
+    if (!currentUser) return;
+    
+    if (!currentUser.gameHistory) currentUser.gameHistory = [];
+    
+    currentUser.gameHistory.unshift({
+        name: gameName,
+        result: result,
+        pointsEarned: pointsEarned,
+        date: Date.now()
+    });
+    
+    // Keep only last 50 games
+    if (currentUser.gameHistory.length > 50) {
+        currentUser.gameHistory = currentUser.gameHistory.slice(0, 50);
+    }
+    
+    saveUserData();
+}
+
+function addPointsHistory(description, points) {
+    if (!currentUser) return;
+    
+    if (!currentUser.pointsHistory) currentUser.pointsHistory = [];
+    
+    currentUser.pointsHistory.unshift({
+        description: description,
+        points: points,
+        date: Date.now()
+    });
+    
+    // Keep only last 100 transactions
+    if (currentUser.pointsHistory.length > 100) {
+        currentUser.pointsHistory = currentUser.pointsHistory.slice(0, 100);
+    }
+    
+    saveUserData();
 }
 
 // Casino Offer Functions
@@ -630,9 +683,13 @@ function purchaseItem(itemId) {
     currentUser.points -= item.price;
     currentUser.inventory.push({ ...item, purchaseDate: Date.now() });
     
+    // Track points history
+    addPointsHistory(`Compra: ${item.name}`, -item.price);
+    
     // Handle special item types
     if (item.type === 'points_package') {
         currentUser.points += item.points;
+        addPointsHistory(`Pacote de Pontos: ${item.name}`, item.points);
         showPointsAnimation(item.points, true);
     } else if (item.type === 'powerup') {
         activatePowerup(item);
@@ -871,5 +928,350 @@ function saveItemChanges(itemId, category) {
         setTimeout(() => {
             document.body.removeChild(notification);
         }, 3000);
+    }
+}
+
+// Profile Menu Functions
+function toggleProfileMenu() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+// Close profile menu when clicking outside
+document.addEventListener('click', function(event) {
+    const profileDropdown = document.getElementById('profileDropdown');
+    const userProfile = document.getElementById('userProfile');
+    
+    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+        if (!userProfile.contains(event.target)) {
+            profileDropdown.classList.add('hidden');
+        }
+    }
+});
+
+function getRoleDisplayName(role) {
+    const roleNames = {
+        admin: 'Administrador',
+        moderator: 'Moderador',
+        user: 'Usuário'
+    };
+    return roleNames[role] || 'Usuário';
+}
+
+function openProfileSettings() {
+    toggleProfileMenu(); // Close dropdown
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">Configurações do Perfil</h3>
+                <button onclick="closeModal(this)" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="text-center mb-6">
+                    <img id="profileModalAvatar" src="${currentUser.avatar}" alt="Avatar" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-purple-500">
+                    <button onclick="changeAvatar()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-bold transition-all">
+                        📸 Alterar Foto
+                    </button>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Nome de Usuário</label>
+                    <input type="text" id="profileUsername" value="${currentUser.username}" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Função</label>
+                    <input type="text" value="${getRoleDisplayName(currentUser.role)}" disabled class="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-gray-400">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Pontos Totais</label>
+                    <input type="text" value="${currentUser.points} pontos" disabled class="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-gray-400">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Jogos Jogados</label>
+                    <input type="text" value="${currentUser.gamesPlayed || 0} jogos" disabled class="w-full px-3 py-2 bg-gray-600 border border-gray-600 rounded-lg text-gray-400">
+                </div>
+            </div>
+            
+            <div class="flex space-x-3 mt-6">
+                <button onclick="saveProfileSettings()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-bold transition-all">
+                    Salvar
+                </button>
+                <button onclick="closeModal(this)" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg font-bold transition-all">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function changeAvatar() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newAvatar = e.target.result;
+                document.getElementById('profileModalAvatar').src = newAvatar;
+                // Store temporarily until save
+                window.tempAvatar = newAvatar;
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+function saveProfileSettings() {
+    const newUsername = document.getElementById('profileUsername').value;
+    
+    if (!newUsername || newUsername.trim() === '') {
+        alert('Por favor, insira um nome de usuário válido.');
+        return;
+    }
+    
+    // Update user data
+    currentUser.username = newUsername.trim();
+    
+    if (window.tempAvatar) {
+        currentUser.avatar = window.tempAvatar;
+        delete window.tempAvatar;
+    }
+    
+    // Update in users array
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
+    if (userIndex !== -1) {
+        users[userIndex] = currentUser;
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    // Update UI
+    updateUI();
+    
+    // Close modal
+    const modal = document.querySelector('.fixed.inset-0');
+    if (modal) {
+        document.body.removeChild(modal);
+    }
+    
+    // Show success message
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg z-50';
+    notification.innerHTML = `
+        <div class="flex items-center space-x-3">
+            <div class="text-2xl">✅</div>
+            <div>
+                <div class="font-bold">Perfil atualizado!</div>
+                <div class="text-sm opacity-90">Suas alterações foram salvas</div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 3000);
+}
+
+function openGameHistory() {
+    toggleProfileMenu();
+    
+    // Initialize game history if not exists
+    if (!currentUser.gameHistory) {
+        currentUser.gameHistory = [];
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-gray-800 rounded-lg p-8 max-w-2xl w-full mx-4 max-h-96 overflow-hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">📊 Histórico de Jogos</h3>
+                <button onclick="closeModal(this)" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <div class="overflow-y-auto max-h-80">
+                ${currentUser.gameHistory.length > 0 ? 
+                    currentUser.gameHistory.map(game => `
+                        <div class="bg-gray-700 rounded-lg p-4 mb-3">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-bold text-white">${game.name}</div>
+                                    <div class="text-sm text-gray-400">${new Date(game.date).toLocaleString('pt-PT')}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="${game.pointsEarned >= 0 ? 'text-green-400' : 'text-red-400'} font-bold">
+                                        ${game.pointsEarned >= 0 ? '+' : ''}${game.pointsEarned} pts
+                                    </div>
+                                    <div class="text-sm text-gray-400">${game.result}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') :
+                    '<div class="text-center text-gray-400 py-8">📭 Nenhum jogo jogado ainda!</div>'
+                }
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button onclick="closeModal(this)" class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-bold transition-all">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function openInventory() {
+    toggleProfileMenu();
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-gray-800 rounded-lg p-8 max-w-2xl w-full mx-4 max-h-96 overflow-hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">🎒 Meu Inventário</h3>
+                <button onclick="closeModal(this)" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <div class="overflow-y-auto max-h-80">
+                ${currentUser.inventory && currentUser.inventory.length > 0 ? 
+                    '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+                    currentUser.inventory.map(item => {
+                        const rarityColor = getRarityColor(item.rarity);
+                        return `
+                            <div class="bg-gray-700 rounded-lg p-4 border-l-4 ${rarityColor.border}">
+                                ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-20 object-cover rounded mb-2">` : ''}
+                                <div class="font-bold text-white">${item.name}</div>
+                                <div class="text-sm text-gray-400 mb-2">${item.description}</div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs px-2 py-1 rounded-full ${rarityColor.bg} ${rarityColor.text} font-bold">
+                                        ${item.rarity.toUpperCase()}
+                                    </span>
+                                    <span class="text-xs text-gray-500">
+                                        ${new Date(item.purchaseDate).toLocaleDateString('pt-PT')}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('') + '</div>' :
+                    '<div class="text-center text-gray-400 py-8">🛒 Inventário vazio! Visite a loja para comprar itens.</div>'
+                }
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button onclick="closeModal(this)" class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-bold transition-all">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function openPointsHistory() {
+    toggleProfileMenu();
+    
+    // Initialize points history if not exists
+    if (!currentUser.pointsHistory) {
+        currentUser.pointsHistory = [];
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-gray-800 rounded-lg p-8 max-w-2xl w-full mx-4 max-h-96 overflow-hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">💰 Histórico de Pontos</h3>
+                <button onclick="closeModal(this)" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <div class="overflow-y-auto max-h-80">
+                ${currentUser.pointsHistory.length > 0 ? 
+                    currentUser.pointsHistory.map(entry => `
+                        <div class="bg-gray-700 rounded-lg p-4 mb-3">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-bold text-white">${entry.description}</div>
+                                    <div class="text-sm text-gray-400">${new Date(entry.date).toLocaleString('pt-PT')}</div>
+                                </div>
+                                <div class="${entry.points >= 0 ? 'text-green-400' : 'text-red-400'} font-bold text-lg">
+                                    ${entry.points >= 0 ? '+' : ''}${entry.points}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') :
+                    '<div class="text-center text-gray-400 py-8">💸 Nenhuma transação de pontos ainda!</div>'
+                }
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button onclick="closeModal(this)" class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-6 rounded-lg font-bold transition-all">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function logout() {
+    if (confirm('Tem certeza que deseja sair?')) {
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        
+        // Hide user interface elements
+        document.getElementById('userProfile').classList.add('hidden');
+        document.getElementById('topNavButtons').classList.add('hidden');
+        document.getElementById('navigationMenu').classList.add('hidden');
+        document.getElementById('loginBtn').classList.remove('hidden');
+        
+        // Close any open dropdown
+        document.getElementById('profileDropdown').classList.add('hidden');
+        
+        // Show login section
+        showSection('login');
+        
+        // Show logout notification
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-blue-600 text-white px-6 py-4 rounded-lg shadow-lg z-50';
+        notification.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <div class="text-2xl">👋</div>
+                <div>
+                    <div class="font-bold">Logout realizado!</div>
+                    <div class="text-sm opacity-90">Até a próxima!</div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 3000);
+    }
+}
+
+function closeModal(button) {
+    const modal = button.closest('.fixed.inset-0');
+    if (modal) {
+        document.body.removeChild(modal);
     }
 }

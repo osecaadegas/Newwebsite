@@ -38,12 +38,57 @@
                     </div>
                     
                     <!-- User Profile -->
-                    <div id="userProfile" class="hidden flex items-center space-x-3">
-                        <img id="userAvatar" class="w-8 h-8 rounded-full" src="" alt="">
-                        <span id="userName" class="text-sm font-medium"></span>
-                        <div class="flex items-center space-x-1 bg-purple-600 px-3 py-1 rounded-full">
-                            <span id="userPoints" class="text-sm font-bold">0</span>
-                            <span class="text-xs">pts</span>
+                    <div id="userProfile" class="hidden flex items-center space-x-3 relative">
+                        <div class="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 px-3 py-2 rounded-lg transition-all" onclick="toggleProfileMenu()">
+                            <img id="userAvatar" class="w-8 h-8 rounded-full border-2 border-purple-500" src="" alt="">
+                            <span id="userName" class="text-sm font-medium"></span>
+                            <div class="flex items-center space-x-1 bg-purple-600 px-3 py-1 rounded-full">
+                                <span id="userPoints" class="text-sm font-bold">0</span>
+                                <span class="text-xs">pts</span>
+                            </div>
+                            <span class="text-gray-400 text-sm">▼</span>
+                        </div>
+                        
+                        <!-- Profile Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute top-full right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50">
+                            <div class="p-4 border-b border-gray-700">
+                                <div class="flex items-center space-x-3">
+                                    <img id="dropdownAvatar" class="w-12 h-12 rounded-full border-2 border-purple-500" src="" alt="">
+                                    <div>
+                                        <div id="dropdownUserName" class="font-bold text-white"></div>
+                                        <div id="dropdownUserRole" class="text-sm text-gray-400"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-2">
+                                <button onclick="openProfileSettings()" class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-700 rounded-lg transition-all">
+                                    <span class="text-lg">⚙️</span>
+                                    <span class="text-white">Configurações do Perfil</span>
+                                </button>
+                                
+                                <button onclick="openGameHistory()" class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-700 rounded-lg transition-all">
+                                    <span class="text-lg">📊</span>
+                                    <span class="text-white">Histórico de Jogos</span>
+                                </button>
+                                
+                                <button onclick="openInventory()" class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-700 rounded-lg transition-all">
+                                    <span class="text-lg">🎒</span>
+                                    <span class="text-white">Meu Inventário</span>
+                                </button>
+                                
+                                <button onclick="openPointsHistory()" class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-700 rounded-lg transition-all">
+                                    <span class="text-lg">💰</span>
+                                    <span class="text-white">Histórico de Pontos</span>
+                                </button>
+                                
+                                <hr class="border-gray-700 my-2">
+                                
+                                <button onclick="logout()" class="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-red-600 rounded-lg transition-all text-red-400 hover:text-white">
+                                    <span class="text-lg">🚪</span>
+                                    <span>Sair</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <button id="loginBtn" onclick="loginWithTwitch()" class="twitch-purple px-4 py-2 rounded-lg font-medium hover:bg-purple-600 transition-colors">
@@ -149,9 +194,37 @@
 
         <!-- Main Dashboard -->
         <div id="mainSection" class="hidden">
-            <div class="text-center mb-12 pt-32">
-                <h2 class="text-5xl font-bold mb-4 gradient-text">Bem-vindo à Comunidade!</h2>
-                <p class="text-xl text-gray-300">Joga jogos, ganha pontos, sobe na classificação!</p>
+            <!-- Personal Introduction Section -->
+            <div class="mb-12 pt-16">
+                <div class="max-w-4xl mx-auto bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-4 border border-gray-600 card-hover">
+                    <div class="md:flex items-center gap-4">
+                        <!-- Profile Picture -->
+                        <div class="md:w-1/3 flex justify-center mb-3 md:mb-0">
+                            <div class="relative">
+                                <img src="assets/profile-picture.png" alt="O seca adegas 95" class="w-40 h-40 md:w-52 md:h-52 rounded-full border-4 border-purple-500 shadow-lg object-cover">
+                                <div class="absolute -bottom-3 -right-3 bg-green-500 w-10 h-10 rounded-full border-4 border-gray-800 flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">🎮</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- About Text -->
+                        <div class="md:w-2/3 text-center md:text-left">
+                            <h2 class="text-3xl font-bold mb-3 gradient-text">Olá pessoal, eu sou o Seca! 👋</h2>
+                            <p class="text-gray-300 text-lg mb-4 leading-relaxed">
+                                E aí malta! Sou apenas um gajo que adora jogar e fazer stream. 
+                                Aqui vou partilhando as offers que encontro, alguns tips fixes 
+                                e claro, os momentos mais loucos das sessões. Se curtes gambling 
+                                e umas boas risadas, fica por aí! 😄🎲
+                            </p>
+                            <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                                <span class="bg-purple-600 px-4 py-2 rounded-full text-sm font-medium">🎮 Streamer</span>
+                                <span class="bg-emerald-600 px-4 py-2 rounded-full text-sm font-medium">🎰 Casino Expert</span>
+                                <span class="bg-blue-600 px-4 py-2 rounded-full text-sm font-medium">📺 Content Creator</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Offers Section -->
@@ -178,56 +251,56 @@
                         </div>
                         
                         <!-- Right side - Content -->
-                        <div class="md:w-3/5 p-6 flex flex-col justify-center h-full">
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="text-3xl font-bold text-white">Gangsta Casino</h4>
+                        <div class="md:w-3/5 p-2 py-3 flex flex-col h-full">
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="text-2xl font-bold text-white">Gangsta Casino</h4>
                                 <div class="text-right">
-                                    <div class="text-yellow-400 text-lg font-semibold">⭐ Parceiro Premium</div>
-                                    <div class="text-sm text-gray-400">Licenciado e Regulado</div>
+                                    <div class="text-yellow-400 text-base font-semibold">⭐ Parceiro Premium</div>
+                                    <div class="text-xs text-gray-400">Licenciado e Regulado</div>
                                 </div>
                             </div>
                             
-                            <div class="featured-bonus-highlight mb-6">
-                                <div class="text-4xl font-bold text-purple-400 mb-2">400% Até 1500€</div>
-                                <div class="text-xl text-gray-300 mb-2">+ 420 Rodadas Grátis</div>
-                                <div class="text-sm text-yellow-400 font-medium">Bónus Exclusivo para Streamers!</div>
+                            <div class="featured-bonus-highlight mb-2">
+                                <div class="text-3xl font-bold text-purple-400 mb-1">400% Até 1500€</div>
+                                <div class="text-lg text-gray-300 mb-1">+ 420 Rodadas Grátis</div>
+                                <div class="text-xs text-yellow-400 font-medium">Bónus Exclusivo para Streamers!</div>
                             </div>
                             
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-gray-800 rounded-lg p-3 border border-gray-600">
-                                    <div class="flex items-center mb-1">
-                                        <span class="text-lg mr-2">🎮</span>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <div class="bg-gray-800 rounded-lg p-1.5 border border-gray-600">
+                                    <div class="flex items-center mb-0.5">
+                                        <span class="text-xs mr-1">🎮</span>
                                         <span class="text-xs text-gray-400">Game Providers</span>
                                     </div>
-                                    <div class="text-lg font-bold text-white">90+</div>
+                                    <div class="text-xs font-bold text-white">90+</div>
                                 </div>
-                                <div class="bg-gray-800 rounded-lg p-3 border border-gray-600">
-                                    <div class="flex items-center mb-1">
-                                        <span class="text-lg mr-2">💳</span>
+                                <div class="bg-gray-800 rounded-lg p-1.5 border border-gray-600">
+                                    <div class="flex items-center mb-0.5">
+                                        <span class="text-xs mr-1">💳</span>
                                         <span class="text-xs text-gray-400">Métodos Pagamento</span>
                                     </div>
-                                    <div class="text-lg font-bold text-white">70+</div>
+                                    <div class="text-xs font-bold text-white">70+</div>
                                 </div>
-                                <div class="bg-gray-800 rounded-lg p-3 border border-gray-600">
-                                    <div class="flex items-center mb-1">
-                                        <span class="text-lg mr-2">🌍</span>
+                                <div class="bg-gray-800 rounded-lg p-1.5 border border-gray-600">
+                                    <div class="flex items-center mb-0.5">
+                                        <span class="text-xs mr-1">🌍</span>
                                         <span class="text-xs text-gray-400">Idiomas</span>
                                     </div>
-                                    <div class="text-lg font-bold text-white">15</div>
+                                    <div class="text-xs font-bold text-white">15</div>
                                 </div>
-                                <div class="bg-gray-800 rounded-lg p-3 border border-gray-600">
-                                    <div class="flex items-center mb-1">
-                                        <span class="text-lg mr-2">🛡️</span>
+                                <div class="bg-gray-800 rounded-lg p-1.5 border border-gray-600">
+                                    <div class="flex items-center mb-0.5">
+                                        <span class="text-xs mr-1">🛡️</span>
                                         <span class="text-xs text-gray-400">Licença</span>
                                     </div>
-                                    <div class="text-lg font-bold text-white">Curaçao</div>
+                                    <div class="text-xs font-bold text-white">Curaçao</div>
                                 </div>
                             </div>
                             
                             <!-- Payment Methods Preview -->
-                            <div class="mb-6">
-                                <h5 class="text-sm font-semibold text-gray-300 mb-3">Métodos de Pagamento Disponíveis:</h5>
-                                <div class="flex flex-wrap gap-2 mb-3">
+                            <div class="mb-2">
+                                <h5 class="text-xs font-semibold text-gray-300 mb-1">Métodos de Pagamento Disponíveis:</h5>
+                                <div class="flex flex-wrap gap-1 mb-1">
                                     <span class="bg-blue-600 text-xs px-3 py-1 rounded-full">💳 Visa/Mastercard</span>
                                     <span class="bg-purple-600 text-xs px-3 py-1 rounded-full">📱 MB Way</span>
                                     <span class="bg-green-600 text-xs px-3 py-1 rounded-full">🏦 Revolut</span>
@@ -237,24 +310,24 @@
                                     <span class="bg-gray-700 text-xs px-3 py-1 rounded-full">🏛️ Jetonbank</span>
                                     <span class="bg-orange-600 text-xs px-3 py-1 rounded-full">🚀 MiFinity</span>
                                 </div>
-                                <div class="flex flex-wrap gap-2 mb-3">
-                                    <span class="bg-yellow-600 text-xs px-3 py-1 rounded-full">₿ Bitcoin</span>
-                                    <span class="bg-blue-700 text-xs px-3 py-1 rounded-full">⟠ Ethereum</span>
-                                    <span class="bg-green-700 text-xs px-3 py-1 rounded-full">₮ Tether</span>
-                                    <span class="bg-blue-500 text-xs px-3 py-1 rounded-full">🌊 Ripple</span>
-                                    <span class="bg-purple-700 text-xs px-3 py-1 rounded-full">♠ Cardano</span>
-                                    <span class="bg-yellow-500 text-xs px-3 py-1 rounded-full">🐕 Dogecoin</span>
-                                    <span class="bg-gray-600 text-xs px-3 py-1 rounded-full">◉ Litecoin</span>
-                                    <span class="bg-orange-500 text-xs px-3 py-1 rounded-full">🅱 Bitcoin Cash</span>
+                                <div class="flex flex-wrap gap-1 mb-1">
+                                    <span class="bg-yellow-600 text-xs px-2 py-0.5 rounded-full">₿ Bitcoin</span>
+                                    <span class="bg-blue-700 text-xs px-2 py-0.5 rounded-full">⟠ Ethereum</span>
+                                    <span class="bg-green-700 text-xs px-2 py-0.5 rounded-full">₮ Tether</span>
+                                    <span class="bg-blue-500 text-xs px-2 py-0.5 rounded-full">🌊 Ripple</span>
+                                    <span class="bg-purple-700 text-xs px-2 py-0.5 rounded-full">♠ Cardano</span>
+                                    <span class="bg-yellow-500 text-xs px-2 py-0.5 rounded-full">🐕 Dogecoin</span>
+                                    <span class="bg-gray-600 text-xs px-2 py-0.5 rounded-full">◉ Litecoin</span>
+                                    <span class="bg-orange-500 text-xs px-2 py-0.5 rounded-full">🅱 Bitcoin Cash</span>
                                 </div>
                                 <div class="text-xs text-gray-400">
                                     <strong>Levantamentos:</strong> Bank Transfer, Revolut, Skrill, Neteller, Rapid, eZeeWallet, Jetonbank, MiFinity, Bitcoin, Ethereum, Tether, Ripple, USD Coin, Cardano, Dogecoin, Litecoin, Bitcoin Cash, Solana
                                 </div>
                             </div>
                             
-                            <div class="text-center text-sm text-gray-400 mb-4">Não é necessário código promocional - Activação automática do bónus</div>
+                            <div class="text-center text-xs text-gray-400 mb-2">Não é necessário código promocional - Activação automática do bónus</div>
                             
-                            <button class="featured-claim-btn w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 rounded-xl font-bold text-lg hover:from-purple-500 hover:to-purple-600 transition-all transform hover:scale-105 shadow-lg" onclick="window.open('https://gangstacasinoplay.com/dcae51b7a', '_blank')">
+                            <button class="featured-claim-btn w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-6 px-8 rounded-xl font-bold text-xl hover:from-purple-500 hover:to-purple-600 transition-all transform hover:scale-105 shadow-lg" onclick="window.open('https://gangstacasinoplay.com/dcae51b7a', '_blank')">
                                 🎯 Reclamar Bónus Exclusivo Agora
                             </button>
                         </div>
@@ -473,4 +546,3 @@
     <script src="games.js"></script>
 </body>
 </html>
-
