@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Streamer Overlay Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <div class="overlay-container">
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+      <div class="navbar-left">
+        <img src="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" alt="Logo" class="navbar-logo"/>
+        <!-- Replace Twitch login with static username -->
+        <span class="streamer-name osecaadegas95-name">Osecaadegas95</span>
+        <!-- Image Switcher Start (right after login button) -->
+        <a id="navbar-image-link" href="#" target="_blank" style="display:inline-block;">
+          <img id="navbar-image-switcher" src="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" alt="Switcher" class="navbar-switcher-img"/>
+        </a>
+        <!-- Image Switcher End -->
+      </div>
+      <div class="navbar-center">
+        <span id="current-time" class="current-time"></span>
+      </div>
+      <div class="navbar-right">
+         <a href="https://osecaadegas.github.io/95/" target="_blank" class="navbar-website-btn">
+          <span class="website-btn-icon">🌐</span>
+          <span>osecaadegas.github.io/95/</span>
+        </a>
+        <a href="https://www.begambleaware.org/" target="_blank" class="aware-link">Be Gamble Aware|+🔞</a>
+        <!-- Image switcher removed from here -->
+      </div>
+    </nav>
+
+    <!-- Main Content Layout -->
+    <div class="main-layout">
+      <!-- Left Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-ad">
+          <label for="ad-image-input" class="ad-upload-label">+</label>
+          <input type="file" id="ad-image-input" accept="image/*" style="display:none;">
+          <img id="ad-image-preview" class="ad-image-preview" style="display:none;" alt="Ad"/>
+        </div>
+        <button class="sidebar-btn" id="bh-btn">
+          <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="Search" class="sidebar-icon-img">
+        </button>        <button class="sidebar-btn" id="bo-btn">
+          <img src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png" alt="Casino" class="sidebar-icon-img">
+        </button>
+        <button class="sidebar-btn" id="random-slot-btn">
+          <img src="https://cdn-icons-png.flaticon.com/512/1998/1998087.png" alt="Random" class="sidebar-icon-img">
+        </button>
+        <button class="sidebar-btn" id="tournament-btn">
+          <img src="https://cdn-icons-png.flaticon.com/512/2593/2593549.png" alt="Tournament" class="sidebar-icon-img">
+        </button>
+      </aside>
+
+      <!-- Middle Panel (hidden by default, shown when BH is clicked) -->
+      <section class="middle-panel" id="middle-panel" style="display:none;">
+        <div class="middle-panel-title">BH Panel</div>
+        <div class="middle-panel-row">
+          <label class="middle-input-label left">
+            Start Money
+            <input type="number" id="start-money-input" class="middle-input" placeholder="Start Money" min="0" step="any" />
+          </label>
+          <label class="middle-input-label right">
+            Stop Money
+            <input type="number" id="stop-money-input" class="middle-input" placeholder="Stop Money" min="0" step="any" />
+          </label>
+        </div>
+        <div class="middle-panel-row">
+          <label class="middle-input-label left">
+            Slot Name
+            <input type="text" id="slot-name-input" class="middle-input" placeholder="Slot Name" />
+          </label>
+          <label class="middle-input-label right">
+            Bet Size
+            <input type="number" id="bet-size-input" class="middle-input" placeholder="Enter bet size" min="0" step="any" />
+          </label>
+        </div>
+        <div class="middle-panel-actions">
+          <div class="middle-checkbox-row">
+            <label class="middle-checkbox">
+              <input type="checkbox" id="super-checkbox" />
+              <span>Super</span>
+            </label>
+          </div>
+          <div class="middle-actions-row">
+            <button class="middle-btn small-btn" id="slot-img-url-btn" type="button">
+              <span class="middle-icon">🖼️</span>
+              <span>Slot Image</span>
+            </button>
+            <input type="url" id="slot-img-url-input" class="middle-input slot-img-url-input" placeholder="Paste image URL" style="display:none; width:180px; margin-right:1rem;" />
+            <button class="middle-btn small-btn" id="edit-slots-btn">
+              <span class="middle-icon">✏️</span>
+              <span>Edit Slots</span>
+            </button>
+            <button class="middle-btn small-btn" id="bonus-opening-btn">
+              <span class="middle-icon">▶️</span>
+              <span>Bonus Opening</span>
+            </button>
+          </div>        </div>
+      </section>
+
+      <!-- Random Slot Panel (hidden by default, shown when Random Slot is clicked) -->
+      <section class="middle-panel" id="random-slot-panel" style="display:none;">
+        <div class="middle-panel-title">Random Slot Picker</div>
+        
+        <!-- Provider Filters -->
+        <div class="provider-filters">
+          <div class="filter-title">Filter by Provider:</div>
+          <div class="provider-checkboxes">
+            <label class="provider-checkbox">
+              <input type="checkbox" value="Pragmatic Play" checked />
+              <span>Pragmatic Play</span>
+            </label>
+            <label class="provider-checkbox">
+              <input type="checkbox" value="Hacksaw" checked />
+              <span>Hacksaw</span>
+            </label>
+            <label class="provider-checkbox">
+              <input type="checkbox" value="No Limit" checked />
+              <span>No Limit</span>
+            </label>
+                      <label class="provider-checkbox">
+              <input type="checkbox" value="Bgaming" checked />
+              <span>Bgaming</span>
+            </label>
+                      <label class="provider-checkbox">
+              <input type="checkbox" value="3Oaks" checked />
+              <span>3Oaks</span>
+            </label>
+                      <label class="provider-checkbox">
+              <input type="checkbox" value="Belatra" checked />
+              <span>Belatra</span>
+            </label>
+                      <label class="provider-checkbox">
+              <input type="checkbox" value="Play'n GO" checked />
+              <span>Play'n GO</span>
+            </label>
+                      <label class="provider-checkbox">
+              <input type="checkbox" value="Play'n GO" checked />
+              <span>Play'n GO</span>
+            </label>
+            <label class="provider-checkbox">
+              <input type="checkbox" value="Big Time Gaming" checked />
+              <span>Big Time Gaming</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Slot Display Card -->
+        <div class="random-slot-display">
+          <div class="slot-card-container">
+            <div class="slot-card shuffle-card" id="random-slot-card">
+              <img src="https://i.imgur.com/8E3ucNx.png" alt="Slot" class="slot-image" />
+              <div class="slot-info">
+                <div class="slot-name">Click Shuffle to Pick!</div>
+                <div class="slot-provider">Ready to spin?</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="random-slot-actions">
+          <button class="middle-btn shuffle-btn" id="shuffle-slot-btn">
+            <span class="middle-icon">🎲</span>
+            <span>Shuffle Slot</span>
+          </button>
+          <button class="middle-btn use-slot-btn" id="use-random-slot-btn">
+            <span class="middle-icon">✅</span>
+            <span>Use This Slot</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Tournament Panel (hidden by default, shown when Trophy is clicked) -->
+      <section class="middle-panel" id="tournament-panel" style="display:none;">
+        <div class="middle-panel-title">Tournament Panel</div>
+        
+        <!-- Players Grid with Slots -->
+        <div class="tournament-players-section">
+          <h4 class="players-title">Players & Slots (8)</h4>
+          <div class="players-grid">
+            <div class="player-slot-pair">
+              <input type="text" class="player-input" placeholder="Player 1" />
+              <div class="slot-input-container">
+                <input type="text" class="tournament-slot-input" placeholder="Enter slot name" data-player="1" />
+              </div>
+            </div>
+            <div class="player-slot-pair">
+              <input type="text" class="player-input" placeholder="Player 2" />
+              <div class="slot-input-container">
+                <input type="text" class="tournament-slot-input" placeholder="Enter slot name" data-player="2" />
+              </div>
+            </div>
+            <div class="player-slot-pair">
+              <input type="text" class="player-input" placeholder="Player 3" />
+              <div class="slot-input-container">
+                <input type="text" class="tournament-slot-input" placeholder="Enter slot name" data-player="3" />
+              </div>
+            </div>
+            <div class="player-slot-pair">
+              <input type="text" class="player-input" placeholder="Player 4" />
+              <div class="slot-input-container">
+                <input type="text" class="tournament-slot-input" placeholder="Enter slot name" data-player="4" />
+              </div>
+            </div>
+            <div class="player-slot-pair">
+              <input type="text" class="player-input" placeholder="Player 5" />
+              <div class="slot-input-container">
+                <input type="text" class="tournament-slot-input" placeholder="Enter slot name" data-player="5" />
+              </div>
+            </div>
+            <div class="player-slot-pair">
+              <input type="text" class="player-input" placeholder="Player 6" />
+              <div class="slot-input-container">
+                <input type="text" class="tournament-slot-input" placeholder="Enter slot name" data-player="6" />
+              </div>
+            </div>
+            <div class="player-slot-pair">
+              <input type="text" class="player-input" placeholder="Player 7" />
+              <div class="slot-input-container">
+                <input type="text" class="tournament-slot-input" placeholder="Enter slot name" data-player="7" />
+              </div>
+            </div>
+            <div class="player-slot-pair">
+              <input type="text" class="player-input" placeholder="Player 8" />
+              <div class="slot-input-container">
+                <input type="text" class="tournament-slot-input" placeholder="Enter slot name" data-player="8" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tournament Actions -->
+        <div class="tournament-actions">
+          <button class="middle-btn tournament-btn" id="start-tournament-btn">
+            <span class="middle-icon">🚀</span>
+            <span>Start Tournament</span>
+          </button>
+          <button class="middle-btn tournament-btn" id="reset-tournament-btn">
+            <span class="middle-icon">🔄</span>
+            <span>Reset</span>
+          </button>
+          <button class="middle-btn tournament-btn" id="random-tournament-btn">
+            <span class="middle-icon">🎲</span>
+            <span>Random</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Tournament Control Panel (shown during active tournament) -->
+      <section class="middle-panel" id="tournament-control-panel" style="display:none;">
+        <div class="middle-panel-title">Tournament Controls</div>
+        
+        <!-- Current Match Control -->
+        <div class="tournament-control-section">
+          <h4>Current Match</h4>
+          <div id="current-match-display" class="current-match-display">
+            <div class="match-contestants">
+              <div class="contestant" id="contestant-1">
+                <img id="contestant-1-img" src="" alt="" class="contestant-image">
+                <span id="contestant-1-name" class="contestant-name">Player 1</span>
+                <button class="winner-btn" id="winner-btn-1">Declare Winner</button>
+              </div>
+              <div class="vs-separator">VS</div>
+              <div class="contestant" id="contestant-2">
+                <img id="contestant-2-img" src="" alt="" class="contestant-image">
+                <span id="contestant-2-name" class="contestant-name">Player 2</span>
+                <button class="winner-btn" id="winner-btn-2">Declare Winner</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payout Settings -->
+        <div class="tournament-control-section">
+          <h4>Payout Settings</h4>
+          <div class="payout-controls">
+            <div class="payout-input-group">
+              <label for="winner-payout">Winner Payout:</label>
+              <input type="number" id="winner-payout" class="payout-input" placeholder="0" min="0">
+              <span>€</span>
+            </div>
+            <div class="payout-input-group">
+              <label for="runner-up-payout">Runner-up Payout:</label>
+              <input type="number" id="runner-up-payout" class="payout-input" placeholder="0" min="0">
+              <span>€</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tournament Progress -->
+        <div class="tournament-control-section">
+          <h4>Tournament Progress</h4>
+          <div class="tournament-progress">
+            <div class="progress-info">
+              <span id="current-round">Round: Quarterfinals</span>
+              <span id="matches-remaining">Matches Remaining: 4</span>
+            </div>
+            <div class="tournament-actions">
+              <button class="middle-btn tournament-control-btn" id="next-match-btn">
+                <span class="middle-icon">⏭️</span>
+                <span>Next Match</span>
+              </button>
+              <button class="middle-btn tournament-control-btn" id="end-tournament-btn">
+                <span class="middle-icon">🏁</span>
+                <span>End Tournament</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Content Placeholder -->
+      <main class="main-content">
+        <!-- Add your main overlay content here -->
+      </main>
+
+      <!-- Right Info Panel -->
+      <aside class="info-panel">
+        <div class="money-row-main">
+          <div class="money-display start-money">
+            <span class="money-label">Start</span>
+            <span class="money-value" id="start-money-display-main">--</span>
+          </div>
+          <div class="money-display stop-money">
+            <span class="money-label">Stop</span>
+            <span class="money-value" id="stop-money-display-main">--</span>
+          </div>
+        </div>
+        <!-- Tournament Bracket Section (hidden by default) -->
+        <div class="info-section tournament-bracket" id="tournament-bracket" style="display: none;">
+          <div class="tournament-bracket-header">
+            <h4 id="tournament-phase-title">Tournament - Quarters</h4>
+          </div>
+          <div class="tournament-bracket-content" id="tournament-bracket-content">
+            <!-- Bracket matches will be dynamically inserted here -->
+          </div>
+        </div>
+
+        <!-- Bonus Hunt Results Section -->
+        <div class="info-section bonus-hunt-results" id="bonus-hunt-results" style="margin-bottom:1rem;">
+          <!-- Results will be injected here by JS -->
+        </div>
+        <div class="info-section bonus-list">
+          <h4>Bonus List</h4>
+          <ul></ul> <!-- Infinite carousel will be applied to this list -->
+        </div>
+        <!-- Twitch Chat Embed at the bottom of the right sidebar -->
+        <div class="info-twitch-chat">
+          <div class="empty-chat-card"></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Selected Slot Display Card (Right Side) -->
+    <div class="selected-slot-display" id="selected-slot-display" style="display: none;">
+      <img src="https://i.imgur.com/8E3ucNx.png" alt="Selected Slot" class="selected-slot-image" id="selected-slot-image" />
+    </div>
+  </div>
+</body>
+</html>
