@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customization Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1b2e;
+            color: white;
+            padding: 20px;
+        }
+        .test-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 225, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(15px) !important;
+        }
+        .normal-effect {
+            background: linear-gradient(135deg, #23243a 0%, #2d2e4a 100%) !important;
+            backdrop-filter: none !important;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #9346ff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        .color-input {
+            margin: 10px;
+        }
+        input[type="color"] {
+            width: 50px;
+            height: 30px;
+            border: none;
+            border-radius: 5px;
+        }
+        .navbar-test {
+            background: rgba(26, 27, 46, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #00e1ff;
+        }
+        .streamer-name {
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .website-text {
+            color: #ffffff;
+        }
+        .gamble-aware {
+            color: #ffffff;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Customization Features Test</h1>
+    
+    <div class="controls">
+        <h3>✨ Glass Effect Toggle</h3>
+        <label>
+            <input type="checkbox" id="glass-toggle"> Glass Effect for Cards
+        </label>
+        
+        <h3>🎨 Navbar Text Colors</h3>
+        <div class="color-input">
+            <label>Streamer Name Color: <input type="color" id="streamer-color" value="#ffffff"></label>
+        </div>
+        <div class="color-input">
+            <label>Website Color: <input type="color" id="website-color" value="#ffffff"></label>
+        </div>
+        <div class="color-input">
+            <label>"Be Gamble Aware" Color: <input type="color" id="gamble-color" value="#ffffff"></label>
+        </div>
+        
+        <button onclick="applyChanges()">Apply Changes</button>
+    </div>
+    
+    <div class="navbar-test">
+        <h4>Navbar Preview:</h4>
+        <div class="streamer-name" id="streamer-name">Osecaadegas95</div>
+        <div class="website-text" id="website-text">osecaadegas.github.io/95/</div>
+        <div class="gamble-aware" id="gamble-aware">Be Gamble Aware</div>
+    </div>
+    
+    <div class="test-card" id="test-card">
+        <h3>Right Sidebar Card Test</h3>
+        <p>This card simulates the right sidebar cards that would have the glass effect option.</p>
+        <p>Toggle the glass effect checkbox above to see the difference!</p>
+    </div>
+    
+    <div class="test-card" id="test-card-2">
+        <h3>Another Card</h3>
+        <p>Multiple cards to demonstrate the effect on all sidebar elements.</p>
+    </div>
+
+    <script>
+        function applyChanges() {
+            const glassToggle = document.getElementById('glass-toggle').checked;
+            const streamerColor = document.getElementById('streamer-color').value;
+            const websiteColor = document.getElementById('website-color').value;
+            const gambleColor = document.getElementById('gamble-color').value;
+            
+            // Apply glass effect
+            const cards = document.querySelectorAll('.test-card');
+            cards.forEach(card => {
+                if (glassToggle) {
+                    card.classList.add('glass-effect');
+                    card.classList.remove('normal-effect');
+                } else {
+                    card.classList.add('normal-effect');
+                    card.classList.remove('glass-effect');
+                }
+            });
+            
+            // Apply colors
+            document.getElementById('streamer-name').style.color = streamerColor;
+            document.getElementById('website-text').style.color = websiteColor;
+            document.getElementById('gamble-aware').style.color = gambleColor;
+            
+            console.log('✅ Applied customizations:', {
+                glassEffect: glassToggle,
+                streamerColor,
+                websiteColor,
+                gambleColor
+            });
+        }
+    </script>
+</body>
+</html>
