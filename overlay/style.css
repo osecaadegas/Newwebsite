@@ -362,8 +362,8 @@ body::after {
 
 /* Main circular button */
 .sidebar-main-btn {
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: transparent;
   border: none;
@@ -447,8 +447,8 @@ body::after {
 /* Individual fan buttons */
 .sidebar-btn {
   position: absolute;
-  width: 90px;
-  height: 90px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: rgba(30, 30, 30, 0.9);
 
@@ -487,39 +487,45 @@ body::after {
   pointer-events: auto;
 }
 
-.sidebar.open .sidebar-btn:nth-child(1) {
-  transform: translate(-50%, -50%) translate(0, -110px);
+/* Clean circular arrangement with essential buttons */
+.sidebar.open .sidebar-btn:nth-child(1) { /* Spotify - Top */
+  transform: translate(-50%, -50%) translate(0, -80px);
   transition-delay: 0.1s;
 }
 
-.sidebar.open .sidebar-btn:nth-child(2) {
-  transform: translate(-50%, -50%) translate(95px, -55px);
+.sidebar.open .sidebar-btn:nth-child(2) { /* BH - Top Right */
+  transform: translate(-50%, -50%) translate(57px, -57px);
   transition-delay: 0.2s;
 }
 
-.sidebar.open .sidebar-btn:nth-child(3) {
-  transform: translate(-50%, -50%) translate(95px, 55px);
+.sidebar.open .sidebar-btn:nth-child(3) { /* BO - Right */
+  transform: translate(-50%, -50%) translate(80px, 0);
   transition-delay: 0.3s;
 }
 
-.sidebar.open .sidebar-btn:nth-child(4) {
-  transform: translate(-50%, -50%) translate(0, 110px);
+.sidebar.open .sidebar-btn:nth-child(4) { /* Random Slot - Bottom Right */
+  transform: translate(-50%, -50%) translate(57px, 57px);
   transition-delay: 0.4s;
 }
 
-.sidebar.open .sidebar-btn:nth-child(5) {
-  transform: translate(-50%, -50%) translate(-95px, 55px);
+.sidebar.open .sidebar-btn:nth-child(5) { /* Tournament - Bottom */
+  transform: translate(-50%, -50%) translate(0, 80px);
   transition-delay: 0.5s;
 }
 
-.sidebar.open .sidebar-btn:nth-child(6) {
-  transform: translate(-50%, -50%) translate(-95px, -55px);
+.sidebar.open .sidebar-btn:nth-child(6) { /* Ad/Art - Bottom Left */
+  transform: translate(-50%, -50%) translate(-57px, 57px);
   transition-delay: 0.6s;
 }
 
-.sidebar.open .sidebar-btn:nth-child(7) {
-  transform: translate(-50%, -50%) translate(0, 0);
-  transition-delay: 0.0s;
+.sidebar.open .sidebar-btn:nth-child(7) { /* Lock - Left */
+  transform: translate(-50%, -50%) translate(-80px, 0);
+  transition-delay: 0.7s;
+}
+
+.sidebar.open .sidebar-btn:nth-child(8) { /* Customization - Top Left */
+  transform: translate(-50%, -50%) translate(-57px, -57px);
+  transition-delay: 0.8s;
 }
 
 /* Lock button specific styling */
@@ -594,11 +600,11 @@ body::after {
   border: none;
   color: #ffffff;
   border-radius: 50%;
-  padding: 1rem 0.4rem;
-  width: 88px;
-  height: 88px;
+  padding: 0.7rem 0.3rem;
+  width: 60px;
+  height: 60px;
   box-shadow: none;
-  font-size: 1.9rem;
+  font-size: 1.4rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -614,8 +620,8 @@ body::after {
 
 /* Updated sidebar icon styles for circular design */
 .sidebar-icon-img {
-  width: 88px;
-  height: 88px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   transition: all 0.3s ease;
   filter: brightness(1.2);
@@ -888,7 +894,7 @@ body::after {
   background: linear-gradient(135deg, #23243a 0%, #2d2e4a 100%);
   border-radius: 24px;
   box-shadow: 0 8px 32px 0 rgba(0,225,255,0.13), 0 1.5px 0 0 #00e1ff inset;
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1.2rem;
   margin: 0;
   min-width: 320px;
   max-width: 400px;
@@ -914,7 +920,41 @@ body::after {
 }
 
 .info-section {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(147, 70, 255, 0.5) 50%, 
+    transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.info-section:hover {
+  transform: translateY(-2px);
+  border-color: rgba(147, 70, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(147, 70, 255, 0.1);
+}
+
+.info-section:hover::before {
+  opacity: 1;
 }
 
 .stats {
@@ -1000,14 +1040,16 @@ body::after {
 }
 
 .bonus-list h4 {
-  /* Header bar style */
-  background: #1a1c22;
-  color: #9147ff;
-  font-size: 1.13rem;
-  font-weight: 700;
-  border-radius: 0;
+  /* Modern header bar style with proper rounded corners */
+  background: linear-gradient(135deg, 
+    rgba(147, 70, 255, 0.15) 0%, 
+    rgba(147, 70, 255, 0.08) 100%);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 16px 16px 0 0;
   margin: 0;
-  padding: 1rem 0.5rem 1rem 0.5rem;
+  padding: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1016,40 +1058,82 @@ body::after {
   top: 0;
   left: 0;
   z-index: 10;
-  box-shadow: none;
-  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(147, 70, 255, 0.2);
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+.bonus-list h4::before {
+  content: '🎰';
+  margin-right: 0.8rem;
+  font-size: 1.1rem;
+}
+
+.bonus-list h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(147, 70, 255, 0.8) 50%, 
+    transparent 100%);
 }
 
 /* Bonus List Section */
 .info-section.bonus-list {
-  /* Card container for the bonus list */
-  background: #23272f;
-  border-radius: 0 0 18px 18px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.13);
+  /* Modern card container for the bonus list */
+  background: linear-gradient(145deg, 
+    rgba(30, 32, 42, 0.8) 0%, 
+    rgba(25, 28, 35, 0.9) 100%);
+  border: 1px solid rgba(147, 70, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(147, 70, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   padding: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   position: relative;
-  min-height: 340px;
-  max-height: 540px;
-  height: 540px;
+  min-height: 320px;
+  max-height: 480px;
+  height: 400px;
   overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-section.bonus-list:hover {
+  transform: translateY(-4px);
+  border-color: rgba(147, 70, 255, 0.4);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(147, 70, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .bonus-list ul {
-  /* List inside the card, below the header bar */
+  /* Enhanced carousel list styling */
   position: relative;
   z-index: 1;
-  animation: bonus-carousel-smooth 20s cubic-bezier(0.4, 0.0, 0.6, 1) infinite;
+  animation: bonus-carousel-enhanced 25s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
   will-change: transform;
-  transition: animation-play-state 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   scrollbar-width: none;
   overflow: visible !important;
   height: auto;
   margin: 0;
-  padding: 2.5rem 0 0.2rem 0;
+  padding: 3.2rem 1rem 1rem 1rem;
+  list-style: none;
   /* Enhanced performance and smoothness */
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -1058,46 +1142,382 @@ body::after {
 
 .bonus-list ul:hover {
   animation-play-state: paused;
+  transform: scale(1.02);
 }
 
 .bonus-list ul::-webkit-scrollbar {
   display: none !important;
 }
 
-/* Add gradient overlay for professional fade effect */
-.info-section.bonus-list::before {
+.bonus-list li {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.08) 0%, 
+    rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin: 0.8rem 0;
+  padding: 1rem 1.2rem;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(5px);
+}
+
+.bonus-list li::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(147, 70, 255, 0.1) 50%, 
+    transparent 100%);
+  transition: left 0.5s ease;
+}
+
+.bonus-list li:hover {
+  transform: translateX(4px);
+  border-color: rgba(147, 70, 255, 0.3);
+  background: linear-gradient(135deg, 
+    rgba(147, 70, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.05) 100%);
+  box-shadow: 0 4px 16px rgba(147, 70, 255, 0.2);
+}
+
+.bonus-list li:hover::before {
+  left: 100%;
+}
+
+.bonus-list li:nth-child(odd) {
+  border-left: 3px solid rgba(147, 70, 255, 0.4);
+}
+
+.bonus-list li:nth-child(even) {
+  border-left: 3px solid rgba(0, 225, 255, 0.4);
+}
+
+/* Modern gradient overlays for smooth fade effects */
+.info-section.bonus-list .gradient-overlay-top {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: linear-gradient(180deg, #23272f 0%, rgba(35, 39, 47, 0.8) 70%, transparent 100%);
-  z-index: 2;
+  height: 70px;
+  background: linear-gradient(180deg, 
+    rgba(30, 32, 42, 0.95) 0%, 
+    rgba(30, 32, 42, 0.8) 60%, 
+    transparent 100%);
+  z-index: 5;
   pointer-events: none;
-  border-radius: 0 0 18px 18px;
+  border-radius: 16px 16px 0 0;
 }
 
-.info-section.bonus-list::after {
+.info-section.bonus-list .gradient-overlay-bottom {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 40px;
-  background: linear-gradient(0deg, #23272f 0%, rgba(35, 39, 47, 0.7) 60%, transparent 100%);
-  z-index: 2;
+  height: 50px;
+  background: linear-gradient(0deg, 
+    rgba(25, 28, 35, 0.95) 0%, 
+    rgba(25, 28, 35, 0.7) 70%, 
+    transparent 100%);
+  z-index: 5;
   pointer-events: none;
-  border-radius: 0 0 18px 18px;
+  border-radius: 0 0 16px 16px;
 }
 
-/* Professional carousel animation with smooth easing and subtle acceleration */
-@keyframes bonus-carousel-smooth {
+/* Modern carousel header and controls */
+.bonus-list-header {
+  position: relative;
+  z-index: 10;
+}
+
+.carousel-controls {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.carousel-control {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.carousel-control:hover {
+  background: rgba(147, 70, 255, 0.3);
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.carousel-control.active {
+  background: rgba(147, 70, 255, 0.6);
+  color: #ffffff;
+}
+
+/* Carousel container */
+.carousel-container {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Progress indicator */
+.carousel-indicators {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 6;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, 
+    rgba(147, 70, 255, 0.8) 0%, 
+    rgba(0, 225, 255, 0.8) 100%);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.3s ease;
+  animation: progress-animate 25s linear infinite;
+}
+
+@keyframes progress-animate {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* Enhanced info card hover effects and micro-interactions */
+.info-section {
+  cursor: pointer;
+}
+
+.info-section:hover .bonus-list h4::after {
+  width: 100px;
+  opacity: 1;
+}
+
+/* Add particle effect on hover */
+.info-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+    rgba(147, 70, 255, 0.1) 0%, 
+    transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.info-section:hover::after {
+  opacity: 1;
+}
+
+/* Enhanced money display hover effects */
+.money-display {
+  cursor: pointer;
+}
+
+.money-display:hover .money-label {
+  transform: translateY(-2px);
+  color: rgba(147, 70, 255, 0.8);
+}
+
+.money-display:hover .money-value {
+  transform: scale(1.05);
+  text-shadow: 0 0 10px currentColor;
+}
+
+.money-display .money-label,
+.money-display .money-value {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Interactive bonus list items with stagger effect */
+.bonus-list li {
+  cursor: pointer;
+}
+
+.bonus-list:hover li {
+  transform: translateX(2px);
+  transition-delay: calc(var(--item-index, 0) * 0.05s);
+}
+
+.bonus-list li:hover {
+  transform: translateX(8px) !important;
+  z-index: 2;
+  transition-delay: 0s !important;
+}
+
+/* Smooth carousel pause effect */
+.bonus-list ul.paused {
+  filter: saturate(0.7);
+  transition: filter 0.3s ease;
+}
+
+/* Enhanced empty chat card interactions */
+.empty-chat-card {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-chat-card::before {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.empty-chat-card:hover::before {
+  transform: scale(1.2) rotate(10deg);
+  opacity: 0.6;
+}
+
+.empty-chat-card:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* Empty state for bonus list */
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  z-index: 3;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+  animation: float 3s ease-in-out infinite;
+}
+
+.empty-state-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.empty-state-subtext {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.3px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1440px) {
+  .info-panel {
+    width: 360px;
+    right: 16px;
+  }
+  
+  .info-section.bonus-list {
+    height: 420px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .info-panel {
+    width: 340px;
+    padding: 1.2rem;
+  }
+  
+  .money-row-main {
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+  }
+  
+  .bonus-list h4 {
+    font-size: 0.85rem;
+    padding: 1rem 0.8rem;
+  }
+}
+
+/* Accessibility improvements */
+.carousel-control:focus {
+  outline: 2px solid rgba(147, 70, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.info-section:focus-within {
+  border-color: rgba(147, 70, 255, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 0 0 2px rgba(147, 70, 255, 0.2);
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .bonus-list ul {
+    animation: none !important;
+  }
+  
+  .progress-fill {
+    animation: none !important;
+  }
+  
+  .info-section,
+  .money-display,
+  .bonus-list li,
+  .carousel-control {
+    transition: none !important;
+  }
+  
+  .empty-state-icon {
+    animation: none !important;
+  }
+}
+
+/* Enhanced carousel animation with modern easing and smooth transitions */
+@keyframes bonus-carousel-enhanced {
   0% { 
-    transform: translateY(0); 
+    transform: translateY(0) scale(1); 
     opacity: 1;
   }
-  2% { 
+  3% { 
     transform: translateY(-1px); 
     opacity: 1;
   }
@@ -1283,12 +1703,11 @@ body::after {
   flex-direction: row;
   justify-content: space-between;
   align-items: stretch;
-  gap: 1.2rem;
-  margin-bottom: 1.2rem;
-  background: rgba(36, 38, 48, 0.97);
-  border-radius: 16px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
-  padding: 1.1rem 1.2rem;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 .money-display {
   flex: 1;
@@ -1297,19 +1716,55 @@ body::after {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  padding: 0.7rem 0.5rem;
-  background: rgba(24, 26, 32, 0.92);
+  padding: 0.8rem 0.7rem;
+  background: linear-gradient(135deg, 
+    rgba(30, 32, 42, 0.6) 0%, 
+    rgba(36, 38, 48, 0.7) 100%);
+  border: 1px solid rgba(147, 70, 255, 0.08);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 1px 4px rgba(147, 70, 255, 0.03);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.money-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(147, 70, 255, 0.3) 50%, 
+    transparent 100%);
+  opacity: 0.6;
+}
+
+.money-display:hover {
+  transform: translateY(-1px);
+  border-color: rgba(147, 70, 255, 0.2);
+  background: linear-gradient(135deg, 
+    rgba(30, 32, 42, 0.8) 0%, 
+    rgba(36, 38, 48, 0.9) 100%);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(147, 70, 255, 0.1);
 }
 .money-display .money-label {
-  font-size: 1.08rem;
-  font-weight: 700;
-  margin-bottom: 0.2rem;
-  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
 }
 .money-display .money-value {
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 .start-money .money-label,
 .start-money .money-value {
@@ -1321,12 +1776,18 @@ body::after {
 }
 
 .info-section.bonus-list {
-  /* Card container for the bonus list */
-  background: #23272f;
-  border-radius: 18px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.13);
+  /* Modern card container for the bonus list (duplicate styling consolidated) */
+  background: linear-gradient(145deg, 
+    rgba(30, 32, 42, 0.8) 0%, 
+    rgba(25, 28, 35, 0.9) 100%);
+  border: 1px solid rgba(147, 70, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(147, 70, 255, 0.1);
+  backdrop-filter: blur(10px);
   padding: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -1808,11 +2269,103 @@ body::after {
 
 .empty-chat-card {
   width: 100%;
-  height: 365px;
-  background: #181a20;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
+  height: 280px;
+  background: linear-gradient(145deg, 
+    rgba(30, 32, 42, 0.6) 0%, 
+    rgba(25, 28, 35, 0.8) 100%);
+  border: 1px solid rgba(147, 70, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(147, 70, 255, 0.05);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.empty-chat-card::before {
+  content: '💬';
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+}
+
+.empty-chat-card::after {
+  content: 'Twitch Chat Area';
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.empty-chat-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(147, 70, 255, 0.3);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(147, 70, 255, 0.15);
+}
+
+/* Twitch Chat Container */
+.twitch-chat-container {
+  width: 100%;
+  height: 280px;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+#twitch-chat-iframe {
+  border-radius: 16px;
+  background: linear-gradient(145deg, 
+    rgba(30, 32, 42, 0.6) 0%, 
+    rgba(25, 28, 35, 0.8) 100%);
+  border: 1px solid rgba(147, 70, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(147, 70, 255, 0.05);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#twitch-chat-iframe:hover {
+  transform: translateY(-2px);
+  border-color: rgba(147, 70, 255, 0.3);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(147, 70, 255, 0.15);
+}
+
+/* Chat loading state */
+.chat-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  z-index: 5;
+}
+
+.chat-loading::before {
+  content: '💬';
+  font-size: 2rem;
   display: block;
+  margin-bottom: 0.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }
 
 /* --- Random Slot Picker Card Styles --- */
@@ -3294,6 +3847,119 @@ body::after {
 }
 
 /* ==================== END TOURNAMENT SYSTEM STYLES ==================== */
+
+/* ==================== SPOTIFY NOW PLAYING WIDGET ==================== */
+.spotify-widget {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 320px;
+  background: rgba(30, 215, 96, 0.1);
+  border: 2px solid #1ed760;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(30, 215, 96, 0.3);
+  z-index: 1000;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.spotify-content {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spotify-album-art {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.spotify-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.spotify-track {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.spotify-artist {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spotify-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spotify-auth-btn, .spotify-toggle-btn {
+  background: #1ed760;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.spotify-auth-btn:hover, .spotify-toggle-btn:hover {
+  background: #1db954;
+  transform: translateY(-1px);
+}
+
+.spotify-toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.spotify-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Spotify sidebar button styling - clean transparent */
+.sidebar-btn#spotify-btn {
+  background: transparent !important;
+}
+
+.sidebar-btn#spotify-btn:hover {
+  background: var(--glass-bg) !important;
+  border-color: var(--primary-neon) !important;
+  box-shadow: 
+    var(--neon-glow-primary),
+    0 10px 40px rgba(0, 255, 255, 0.4) !important;
+}
+
+/* ==================== END SPOTIFY STYLES ==================== */
 
 
 

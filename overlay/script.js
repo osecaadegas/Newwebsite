@@ -1634,9 +1634,228 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
   }
 
+  // Enhanced Carousel Controls
+  let carouselState = {
+    isPaused: false,
+    speed: 'normal', // normal, fast, slow
+    speedMultipliers: {
+      slow: 1.5,
+      normal: 1,
+      fast: 0.6
+    }
+  };
+
+  function initCarouselControls() {
+    const pauseBtn = document.getElementById('carousel-pause');
+    const speedBtn = document.getElementById('carousel-speed');
+    const progressBar = document.getElementById('carousel-progress');
+
+    if (pauseBtn) {
+      pauseBtn.addEventListener('click', toggleCarouselPlayState);
+    }
+
+    if (speedBtn) {
+      speedBtn.addEventListener('click', cycleCarouselSpeed);
+    }
+
+    // Update progress bar
+    if (progressBar) {
+      updateProgressBar();
+    }
+  }
+
+  function toggleCarouselPlayState() {
+    const bonusListUl = document.querySelector('.bonus-list ul');
+    const pauseBtn = document.getElementById('carousel-pause');
+    
+    if (!bonusListUl || !pauseBtn) return;
+
+    carouselState.isPaused = !carouselState.isPaused;
+    
+    if (carouselState.isPaused) {
+      bonusListUl.style.animationPlayState = 'paused';
+      pauseBtn.textContent = '▶️';
+      pauseBtn.title = 'Play';
+      pauseBtn.classList.add('active');
+    } else {
+      bonusListUl.style.animationPlayState = 'running';
+      pauseBtn.textContent = '⏸️';
+      pauseBtn.title = 'Pause';
+      pauseBtn.classList.remove('active');
+    }
+  }
+
+  function cycleCarouselSpeed() {
+    const speeds = ['slow', 'normal', 'fast'];
+    const currentIndex = speeds.indexOf(carouselState.speed);
+    const nextIndex = (currentIndex + 1) % speeds.length;
+    carouselState.speed = speeds[nextIndex];
+
+    const speedBtn = document.getElementById('carousel-speed');
+    const bonusListUl = document.querySelector('.bonus-list ul');
+    
+    if (!speedBtn || !bonusListUl) return;
+
+    // Update button display
+    const speedIcons = {
+      slow: '🐌',
+      normal: '🏃',
+      fast: '🚀'
+    };
+    
+    const speedNames = {
+      slow: 'Slow',
+      normal: 'Normal', 
+      fast: 'Fast'
+    };
+
+    speedBtn.textContent = speedIcons[carouselState.speed];
+    speedBtn.title = `Speed: ${speedNames[carouselState.speed]}`;
+
+    // Apply speed multiplier to animation
+    const currentDuration = parseFloat(bonusListUl.style.animationDuration || '25s');
+    const baseDuration = currentDuration / (carouselState.speedMultipliers[speeds[currentIndex]] || 1);
+    const newDuration = baseDuration * carouselState.speedMultipliers[carouselState.speed];
+    
+    bonusListUl.style.animationDuration = newDuration + 's';
+    
+    // Update progress bar animation
+    updateProgressBar();
+  }
+
+  function updateProgressBar() {
+    const progressFill = document.getElementById('carousel-progress');
+    const bonusListUl = document.querySelector('.bonus-list ul');
+    
+    if (!progressFill || !bonusListUl) return;
+
+    const duration = parseFloat(bonusListUl.style.animationDuration || '25s');
+    progressFill.style.animationDuration = duration + 's';
+    
+    if (carouselState.isPaused) {
+      progressFill.style.animationPlayState = 'paused';
+    } else {
+      progressFill.style.animationPlayState = 'running';
+    }
+  }
+
+  // Enhanced updateBonusListCarousel to work with new controls
+  const originalUpdateCarousel = updateBonusListCarousel;
+  updateBonusListCarousel = function() {
+    originalUpdateCarousel();
+    
+    // Apply current speed setting
+    const bonusListUl = document.querySelector('.bonus-list ul');
+    if (bonusListUl && carouselState.speed !== 'normal') {
+      const currentDuration = parseFloat(bonusListUl.style.animationDuration || '25s');
+      const newDuration = currentDuration * carouselState.speedMultipliers[carouselState.speed];
+      bonusListUl.style.animationDuration = newDuration + 's';
+    }
+    
+    // Apply pause state
+    if (carouselState.isPaused && bonusListUl) {
+      bonusListUl.style.animationPlayState = 'paused';
+    }
+    
+    updateProgressBar();
+    updateEmptyState();
+  };
+
+  // Enhanced UI interactions and micro-animations
+  function initSidebarInteractions() {
+    // Mouse tracking for particle effects
+    const infoSections = document.querySelectorAll('.info-section');
+    
+    infoSections.forEach(section => {
+      section.addEventListener('mousemove', (e) => {
+        const rect = section.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        
+        section.style.setProperty('--mouse-x', x + '%');
+        section.style.setProperty('--mouse-y', y + '%');
+      });
+    });
+
+    // Stagger animation for bonus list items
+    const bonusList = document.querySelector('.bonus-list ul');
+    if (bonusList) {
+      const updateItemIndices = () => {
+        const items = bonusList.querySelectorAll('li:not(.carousel-clone)');
+        items.forEach((item, index) => {
+          item.style.setProperty('--item-index', index);
+        });
+      };
+      
+      // Update indices when items are added
+      const observer = new MutationObserver(updateItemIndices);
+      observer.observe(bonusList, { childList: true });
+      updateItemIndices();
+    }
+
+    // Interactive empty chat card click effect
+    const chatCard = document.querySelector('.empty-chat-card');
+    if (chatCard) {
+      chatCard.addEventListener('click', () => {
+        chatCard.style.transform = 'translateY(0px) scale(0.95)';
+        setTimeout(() => {
+          chatCard.style.transform = '';
+        }, 150);
+      });
+    }
+
+    // Money display click animation
+    const moneyDisplays = document.querySelectorAll('.money-display');
+    moneyDisplays.forEach(display => {
+      display.addEventListener('click', () => {
+        const value = display.querySelector('.money-value');
+        if (value) {
+          value.style.animation = 'none';
+          setTimeout(() => {
+            value.style.animation = 'pulse-highlight 0.6s ease';
+          }, 10);
+        }
+      });
+    });
+  }
+
+  // Add pulse highlight animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes pulse-highlight {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); text-shadow: 0 0 20px currentColor; }
+      100% { transform: scale(1); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Handle empty state for bonus list
+  function updateEmptyState() {
+    const bonusListUl = document.querySelector('.bonus-list ul');
+    const emptyState = document.getElementById('bonus-list-empty');
+    
+    if (!bonusListUl || !emptyState) return;
+    
+    const items = Array.from(bonusListUl.children).filter(li => !li.classList.contains('carousel-clone'));
+    
+    if (items.length === 0) {
+      emptyState.style.display = 'block';
+      bonusListUl.style.display = 'none';
+    } else {
+      emptyState.style.display = 'none';
+      bonusListUl.style.display = 'block';
+    }
+  }
+
   // On page load, setup carousel if there are items
   document.addEventListener('DOMContentLoaded', () => {
     updateBonusListCarousel();
+    initCarouselControls();
+    initSidebarInteractions();
+    
+    // Load saved Twitch chat on page load
+    setTimeout(loadSavedTwitchChat, 500);
   });
 
   // --- Navbar Image Switcher ---
@@ -3687,6 +3906,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (glassEffectToggle) {
       glassEffectToggle.checked = localStorage.getItem('glassEffectEnabled') === 'true';
     }
+    
+    // Load Twitch chat settings
+    const twitchChannelInput = document.getElementById('twitch-channel-input');
+    const twitchChatTheme = document.getElementById('twitch-chat-theme');
+    
+    if (twitchChannelInput) {
+      twitchChannelInput.value = localStorage.getItem('twitchChannelName') || '';
+    }
+    if (twitchChatTheme) {
+      twitchChatTheme.value = localStorage.getItem('twitchChatTheme') || 'dark';
+    }
   }
   
   // Background type switcher
@@ -3761,6 +3991,258 @@ document.addEventListener('DOMContentLoaded', () => {
       const textColor = localStorage.getItem('customTextColor') || '#ffffff';
       applyUIColors(primaryColor, accentColor, backgroundColor, textColor);
     });
+  }
+  
+  // Twitch Chat Functionality
+  const twitchChannelInput = document.getElementById('twitch-channel-input');
+  const twitchChatTheme = document.getElementById('twitch-chat-theme');
+  const loadChatBtn = document.getElementById('load-twitch-chat');
+  const clearChatBtn = document.getElementById('clear-twitch-chat');
+  
+  function loadTwitchChat() {
+    const channelName = twitchChannelInput?.value?.trim();
+    const theme = twitchChatTheme?.value || 'dark';
+    
+    if (!channelName) {
+      showNotification('Please enter a Twitch channel name', 'warning');
+      return;
+    }
+    
+    // Validate channel name (basic validation)
+    if (!/^[a-zA-Z0-9_]{3,25}$/.test(channelName)) {
+      showNotification('Invalid channel name. Use only letters, numbers, and underscores (3-25 characters)', 'error');
+      return;
+    }
+    
+    const chatIframe = document.getElementById('twitch-chat-iframe');
+    const emptyChatCard = document.getElementById('empty-chat-card');
+    const loadButton = document.getElementById('load-twitch-chat');
+    
+    if (chatIframe && emptyChatCard) {
+      // Show loading state
+      emptyChatCard.innerHTML = '<div class="chat-loading">Connecting to Twitch...</div>';
+      emptyChatCard.style.display = 'flex';
+      
+      if (loadButton) {
+        loadButton.textContent = 'Loading...';
+        loadButton.disabled = true;
+      }
+      
+      // Build Twitch chat embed URL with proper domain handling
+      let hostname = window.location.hostname || 'localhost';
+      
+      // Handle localhost and development environments
+      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
+      
+      let chatUrl;
+      if (isLocalhost) {
+        // For localhost, use a direct popout link that opens in a new window
+        // or try with common localhost alternatives
+        chatUrl = `https://www.twitch.tv/embed/${channelName}/chat?darkpopout&parent=localhost&parent=127.0.0.1`;
+      } else {
+        chatUrl = `https://www.twitch.tv/embed/${channelName}/chat?darkpopout&parent=${hostname}`;
+      }
+      
+      setTimeout(() => {
+        if (isLocalhost) {
+          // For localhost, provide alternative options
+          emptyChatCard.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.8);">
+              <div style="font-size: 2rem; margin-bottom: 1rem;">💬</div>
+              <div style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Twitch Chat (Localhost)</div>
+              <div style="font-size: 0.9rem; margin-bottom: 1.5rem; color: rgba(255, 255, 255, 0.6);">
+                Twitch embeds don't work on localhost.<br>Use one of these options:
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <button onclick="window.open('https://www.twitch.tv/popout/${channelName}/chat', '_blank', 'width=400,height=600')" 
+                        style="padding: 0.8rem 1rem; background: linear-gradient(135deg, #9146ff, #772ce8); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                  Open Chat in Popup
+                </button>
+                <button onclick="window.open('https://www.twitch.tv/${channelName}/chat', '_blank')" 
+                        style="padding: 0.8rem 1rem; background: linear-gradient(135deg, #00e1ff, #0099cc); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                  Open Chat in New Tab
+                </button>
+              </div>
+              <div style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.4); margin-top: 1rem;">
+                💡 Deploy to a web server for embedded chat
+              </div>
+            </div>
+          `;
+          emptyChatCard.style.display = 'flex';
+          chatIframe.style.display = 'none';
+          
+          showNotification(`Localhost detected. Use popup options for ${channelName} chat`, 'info');
+        } else {
+          // Try to load the iframe for non-localhost
+          chatIframe.src = chatUrl;
+          
+          // Add error handling for iframe loading
+          chatIframe.onload = () => {
+            chatIframe.style.display = 'block';
+            emptyChatCard.style.display = 'none';
+            showNotification(`Twitch chat loaded for ${channelName}`, 'success');
+          };
+          
+          chatIframe.onerror = () => {
+            emptyChatCard.innerHTML = `
+              <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.8);">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
+                <div style="font-size: 1rem; margin-bottom: 1rem;">Failed to load chat</div>
+                <button onclick="window.open('https://www.twitch.tv/popout/${channelName}/chat', '_blank')" 
+                        style="padding: 0.8rem 1rem; background: #9146ff; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                  Open in Popup Instead
+                </button>
+              </div>
+            `;
+            emptyChatCard.style.display = 'flex';
+            chatIframe.style.display = 'none';
+            showNotification('Chat embed failed. Try popup option', 'error');
+          };
+        }
+        
+        // Save settings
+        localStorage.setItem('twitchChannelName', channelName);
+        localStorage.setItem('twitchChatTheme', theme);
+        
+        if (loadButton) {
+          loadButton.textContent = 'Load Chat';
+          loadButton.disabled = false;
+        }
+        
+        console.log('Twitch chat setup for channel:', channelName);
+        
+        // Optional: Close customization panel after loading
+        const customizationPanel = document.getElementById('customization-panel');
+        if (customizationPanel) {
+          setTimeout(() => {
+            customizationPanel.style.display = 'none';
+          }, 1000);
+        }
+      }, 800);
+    }
+  }
+  
+  function showNotification(message, type = 'info') {
+    // Create notification element if it doesn't exist
+    let notification = document.getElementById('chat-notification');
+    if (!notification) {
+      notification = document.createElement('div');
+      notification.id = 'chat-notification';
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        max-width: 300px;
+        word-wrap: break-word;
+      `;
+      document.body.appendChild(notification);
+    }
+    
+    // Set colors based on type
+    const colors = {
+      success: 'linear-gradient(135deg, #22c55e, #16a34a)',
+      error: 'linear-gradient(135deg, #ef4444, #dc2626)',
+      warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+      info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+    };
+    
+    notification.style.background = colors[type] || colors.info;
+    notification.textContent = message;
+    
+    // Show notification
+    setTimeout(() => {
+      notification.style.opacity = '1';
+      notification.style.transform = 'translateY(0)';
+    }, 10);
+    
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      notification.style.transform = 'translateY(-20px)';
+    }, 3000);
+  }
+  
+  function clearTwitchChat() {
+    const chatIframe = document.getElementById('twitch-chat-iframe');
+    const emptyChatCard = document.getElementById('empty-chat-card');
+    
+    if (chatIframe && emptyChatCard) {
+      chatIframe.style.display = 'none';
+      chatIframe.src = '';
+      emptyChatCard.style.display = 'flex';
+      emptyChatCard.innerHTML = '';
+      
+      // Clear saved settings
+      localStorage.removeItem('twitchChannelName');
+      localStorage.removeItem('twitchChatTheme');
+      
+      console.log('Twitch chat cleared');
+    }
+  }
+  
+  function loadSavedTwitchChat() {
+    const savedChannel = localStorage.getItem('twitchChannelName');
+    const savedTheme = localStorage.getItem('twitchChatTheme') || 'dark';
+    
+    if (twitchChannelInput) twitchChannelInput.value = savedChannel || '';
+    if (twitchChatTheme) twitchChatTheme.value = savedTheme;
+    
+    if (savedChannel) {
+      const chatIframe = document.getElementById('twitch-chat-iframe');
+      const emptyChatCard = document.getElementById('empty-chat-card');
+      
+      if (chatIframe && emptyChatCard) {
+        const hostname = window.location.hostname || 'localhost';
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
+        
+        if (isLocalhost) {
+          // Show localhost-friendly interface
+          emptyChatCard.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.8);">
+              <div style="font-size: 2rem; margin-bottom: 1rem;">💬</div>
+              <div style="font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 600;">${savedChannel} Chat</div>
+              <div style="font-size: 0.8rem; margin-bottom: 1.5rem; color: rgba(255, 255, 255, 0.5);">
+                Localhost detected
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <button onclick="window.open('https://www.twitch.tv/popout/${savedChannel}/chat', '_blank', 'width=400,height=600')" 
+                        style="padding: 0.8rem 1rem; background: linear-gradient(135deg, #9146ff, #772ce8); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                  Open Chat Popup
+                </button>
+                <button onclick="window.open('https://www.twitch.tv/${savedChannel}/chat', '_blank')" 
+                        style="padding: 0.8rem 1rem; background: linear-gradient(135deg, #00e1ff, #0099cc); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                  Open in New Tab
+                </button>
+              </div>
+            </div>
+          `;
+          emptyChatCard.style.display = 'flex';
+          chatIframe.style.display = 'none';
+        } else {
+          // Try to load normally for non-localhost
+          const chatUrl = `https://www.twitch.tv/embed/${savedChannel}/chat?darkpopout&parent=${hostname}`;
+          chatIframe.src = chatUrl;
+          chatIframe.style.display = 'block';
+          emptyChatCard.style.display = 'none';
+        }
+      }
+    }
+  }
+  
+  if (loadChatBtn) {
+    loadChatBtn.addEventListener('click', loadTwitchChat);
+  }
+  
+  if (clearChatBtn) {
+    clearChatBtn.addEventListener('click', clearTwitchChat);
   }
   
   // File upload handlers will be initialized in the delayed customization setup
@@ -4276,4 +4758,202 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Could not find customization elements');
     }
   }, 1000);
+
+  // ==================== SPOTIFY INTEGRATION ====================
+  
+  // Spotify configuration - REPLACE WITH YOUR OWN CREDENTIALS
+  const SPOTIFY_CONFIG = {
+    CLIENT_ID: 'YOUR_SPOTIFY_CLIENT_ID', // Replace with your Spotify app client ID
+    REDIRECT_URI: window.location.origin + window.location.pathname, // Current page URL
+    SCOPES: 'user-read-currently-playing user-read-playback-state'
+  };
+
+  let spotifyAccessToken = localStorage.getItem('spotify_access_token');
+  let spotifyRefreshToken = localStorage.getItem('spotify_refresh_token');
+  let spotifyUpdateInterval;
+
+  // Spotify widget elements
+  const spotifyWidget = document.getElementById('spotify-widget');
+  const spotifyBtn = document.getElementById('spotify-btn');
+  const spotifyAuthBtn = document.getElementById('spotify-auth-btn');
+  const spotifyToggleBtn = document.getElementById('spotify-toggle');
+  const spotifyTrack = document.getElementById('spotify-track');
+  const spotifyArtist = document.getElementById('spotify-artist');
+  const spotifyAlbumArt = document.getElementById('spotify-album-art');
+
+  // Show/hide Spotify widget
+  if (spotifyBtn) {
+    spotifyBtn.addEventListener('click', () => {
+      const isVisible = spotifyWidget.style.display !== 'none';
+      spotifyWidget.style.display = isVisible ? 'none' : 'block';
+      
+      if (!isVisible) {
+        // If showing widget and not authenticated, start auth process
+        if (!spotifyAccessToken) {
+          spotifyAuthBtn.style.display = 'block';
+          spotifyToggleBtn.style.display = 'none';
+        } else {
+          spotifyAuthBtn.style.display = 'none';
+          spotifyToggleBtn.style.display = 'block';
+          startSpotifyUpdates();
+        }
+      } else {
+        stopSpotifyUpdates();
+      }
+    });
+  }
+
+  // Spotify authentication
+  if (spotifyAuthBtn) {
+    spotifyAuthBtn.addEventListener('click', authenticateSpotify);
+  }
+
+  // Toggle widget visibility
+  if (spotifyToggleBtn) {
+    spotifyToggleBtn.addEventListener('click', () => {
+      spotifyWidget.style.display = 'none';
+      stopSpotifyUpdates();
+    });
+  }
+
+  function authenticateSpotify() {
+    const authUrl = `https://accounts.spotify.com/authorize?` +
+      `client_id=${SPOTIFY_CONFIG.CLIENT_ID}&` +
+      `response_type=code&` +
+      `redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&` +
+      `scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&` +
+      `show_dialog=true`;
+    
+    window.open(authUrl, 'spotify-auth', 'width=500,height=600');
+  }
+
+  // Handle Spotify authentication callback
+  function handleSpotifyCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    if (code) {
+      // Exchange code for access token
+      exchangeCodeForToken(code);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+
+  async function exchangeCodeForToken(code) {
+    try {
+      spotifyAuthBtn.textContent = 'Connecting...';
+      
+      // Note: This requires a backend server to securely handle the token exchange
+      // For demo purposes, we'll show how it would work
+      console.log('Code received:', code);
+      console.log('You need to implement a backend endpoint to exchange this code for tokens');
+      console.log('See implementation notes in the code');
+      
+      // Mock successful authentication for demo
+      setTimeout(() => {
+        spotifyAuthBtn.style.display = 'none';
+        spotifyToggleBtn.style.display = 'block';
+        spotifyTrack.textContent = 'Demo Mode';
+        spotifyArtist.textContent = 'Implement backend for full functionality';
+        console.log('Spotify demo mode activated');
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Error exchanging code for token:', error);
+      spotifyAuthBtn.textContent = 'Connection Failed - Retry';
+    }
+  }
+
+  async function getCurrentlyPlaying() {
+    if (!spotifyAccessToken) return null;
+
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+        headers: {
+          'Authorization': `Bearer ${spotifyAccessToken}`
+        }
+      });
+
+      if (response.status === 204) {
+        return null; // No track currently playing
+      }
+
+      if (response.status === 401) {
+        // Token expired, try to refresh
+        await refreshSpotifyToken();
+        return getCurrentlyPlaying(); // Retry with new token
+      }
+
+      if (!response.ok) {
+        throw new Error(`Spotify API error: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching currently playing:', error);
+      return null;
+    }
+  }
+
+  async function refreshSpotifyToken() {
+    if (!spotifyRefreshToken) {
+      console.log('No refresh token available');
+      return false;
+    }
+
+    try {
+      // This also requires a backend endpoint
+      console.log('Token refresh needed - implement backend endpoint');
+      return false;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      return false;
+    }
+  }
+
+  function updateSpotifyDisplay(trackData) {
+    if (!trackData || !trackData.item) {
+      spotifyTrack.textContent = 'No track playing';
+      spotifyArtist.textContent = 'Nothing currently playing';
+      spotifyAlbumArt.src = '';
+      return;
+    }
+
+    const track = trackData.item;
+    spotifyTrack.textContent = track.name;
+    spotifyArtist.textContent = track.artists.map(artist => artist.name).join(', ');
+    
+    if (track.album && track.album.images && track.album.images.length > 0) {
+      spotifyAlbumArt.src = track.album.images[0].url;
+    }
+  }
+
+  function startSpotifyUpdates() {
+    if (spotifyUpdateInterval) return;
+
+    // Update every 5 seconds
+    spotifyUpdateInterval = setInterval(async () => {
+      const trackData = await getCurrentlyPlaying();
+      updateSpotifyDisplay(trackData);
+    }, 5000);
+
+    // Initial update
+    getCurrentlyPlaying().then(updateSpotifyDisplay);
+  }
+
+  function stopSpotifyUpdates() {
+    if (spotifyUpdateInterval) {
+      clearInterval(spotifyUpdateInterval);
+      spotifyUpdateInterval = null;
+    }
+  }
+
+  // Check for authentication callback on page load
+  handleSpotifyCallback();
+
+  // ==================== END SPOTIFY INTEGRATION ====================
+
+
+
 });

@@ -40,12 +40,30 @@
       </div>
     </nav>
 
+    <!-- Spotify Now Playing Widget -->
+    <div class="spotify-widget" id="spotify-widget" style="display: none;">
+      <div class="spotify-content">
+        <img id="spotify-album-art" src="" alt="Album Art" class="spotify-album-art">
+        <div class="spotify-info">
+          <div class="spotify-track" id="spotify-track">No track playing</div>
+          <div class="spotify-artist" id="spotify-artist">Connect to Spotify</div>
+        </div>
+        <div class="spotify-controls">
+          <button id="spotify-auth-btn" class="spotify-auth-btn">Connect Spotify</button>
+          <button id="spotify-toggle" class="spotify-toggle-btn" style="display: none;">Hide</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Content Layout -->
     <div class="main-layout">
       <!-- Modern Circular Sidebar -->
       <aside class="sidebar">
         <div class="sidebar-main-btn" id="sidebar-toggle"></div>
         <div class="sidebar-fan">
+          <button class="sidebar-btn" id="spotify-btn">
+            <img src="../assets/music.png" alt="Spotify" class="sidebar-icon-img">
+          </button>
           <button class="sidebar-btn" id="bh-btn">
             <img src="../assets/crossair.png" alt="Bonus Hunt" class="sidebar-icon-img">
           </button>
@@ -453,12 +471,35 @@
           <!-- Results will be injected here by JS -->
         </div>
         <div class="info-section bonus-list">
-          <h4>Bonus List</h4>
-          <ul></ul> <!-- Infinite carousel will be applied to this list -->
+          <div class="bonus-list-header">
+            <h4>Bonus List</h4>
+            <div class="carousel-controls">
+              <button class="carousel-control pause-btn" id="carousel-pause" title="Pause/Play">⏸️</button>
+              <button class="carousel-control speed-btn" id="carousel-speed" title="Speed: Normal">🏃</button>
+            </div>
+          </div>
+          <div class="carousel-container">
+            <div class="gradient-overlay-top"></div>
+            <ul></ul> <!-- Enhanced carousel will be applied to this list -->
+            <div class="empty-state" id="bonus-list-empty" style="display: none;">
+              <div class="empty-state-icon">🎰</div>
+              <div class="empty-state-text">No bonuses yet</div>
+              <div class="empty-state-subtext">Add a slot to get started</div>
+            </div>
+            <div class="gradient-overlay-bottom"></div>
+          </div>
+          <div class="carousel-indicators">
+            <div class="progress-bar">
+              <div class="progress-fill" id="carousel-progress"></div>
+            </div>
+          </div>
         </div>
         <!-- Twitch Chat Embed at the bottom of the right sidebar -->
         <div class="info-twitch-chat">
-          <div class="empty-chat-card"></div>
+          <div class="twitch-chat-container" id="twitch-chat-container">
+            <div class="empty-chat-card" id="empty-chat-card"></div>
+            <iframe id="twitch-chat-iframe" style="display: none;" width="100%" height="340" frameborder="0" scrolling="no"></iframe>
+          </div>
         </div>
       </aside>
     </div>
@@ -527,6 +568,27 @@
           <div class="customization-row">
             <label>"Be Gamble Aware" Color:</label>
             <input type="color" id="gamble-aware-color" value="#ffffff">
+          </div>
+        </div>
+
+        <!-- Twitch Chat Section -->
+        <div class="customization-section">
+          <h3>💬 Twitch Chat</h3>
+          <div class="customization-row">
+            <label>Twitch Channel Name:</label>
+            <input type="text" id="twitch-channel-input" placeholder="Enter your Twitch channel name">
+            <small>Enter just the channel name (e.g., "yourchannelname")</small>
+          </div>
+          <div class="customization-row">
+            <label>Chat Theme:</label>
+            <select id="twitch-chat-theme">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+          <div class="customization-row">
+            <button class="custom-apply-btn" id="load-twitch-chat">Load Chat</button>
+            <button class="custom-reset-btn" id="clear-twitch-chat">Clear Chat</button>
           </div>
         </div>
 
@@ -688,13 +750,32 @@
       font-size: 14px;
     }
     
-    .customization-row input[type="color"] {
+    .customization-row input[type=\"color\"] {
       width: 50px;
       height: 35px;
       border: 1px solid #00e1ff;
       border-radius: 6px;
       background: none;
       cursor: pointer;
+    }
+    
+    .customization-row small {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      margin-top: 4px;
+      width: 100%;
+    }
+    
+    .customization-row:has(small) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .customization-row:has(small) > div {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
     }
     
     .custom-file-btn, .custom-reset-btn, .custom-apply-btn {
