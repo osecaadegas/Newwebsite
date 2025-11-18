@@ -3897,6 +3897,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
+  // Tab switching functionality
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('tab-button')) {
+      const targetTab = e.target.dataset.tab;
+      
+      // Remove active class from all tabs and contents
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      // Add active class to clicked tab and corresponding content
+      e.target.classList.add('active');
+      document.getElementById(targetTab + '-tab')?.classList.add('active');
+    }
+  });
+  
   if (customizationClose) {
     customizationClose.addEventListener('click', () => {
       customizationPanel.style.display = 'none';
@@ -3970,6 +3985,43 @@ document.addEventListener('DOMContentLoaded', () => {
     if (twitchChatTheme) {
       twitchChatTheme.value = localStorage.getItem('twitchChatTheme') || 'dark';
     }
+    
+    // Load advanced font colors
+    const slotTitleColorInput = document.getElementById('slot-title-color');
+    const slotBetColorInput = document.getElementById('slot-bet-color');
+    const slotWinColorInput = document.getElementById('slot-win-color');
+    const bonusHeaderColorInput = document.getElementById('bonus-header-color');
+    const moneyDisplayColorInput = document.getElementById('money-display-color');
+    
+    if (slotTitleColorInput) slotTitleColorInput.value = localStorage.getItem('slotTitleColor') || '#ffffff';
+    if (slotBetColorInput) slotBetColorInput.value = localStorage.getItem('slotBetColor') || '#00e1ff';
+    if (slotWinColorInput) slotWinColorInput.value = localStorage.getItem('slotWinColor') || '#4ade80';
+    if (bonusHeaderColorInput) bonusHeaderColorInput.value = localStorage.getItem('bonusHeaderColor') || '#ffffff';
+    if (moneyDisplayColorInput) moneyDisplayColorInput.value = localStorage.getItem('moneyDisplayColor') || '#00e1ff';
+    
+    // Load gradient settings
+    const slotGradientStartInput = document.getElementById('slot-gradient-start');
+    const slotGradientEndInput = document.getElementById('slot-gradient-end');
+    const buttonGradientStartInput = document.getElementById('button-gradient-start');
+    const buttonGradientEndInput = document.getElementById('button-gradient-end');
+    const sidebarGradientStartInput = document.getElementById('sidebar-gradient-start');
+    const sidebarGradientEndInput = document.getElementById('sidebar-gradient-end');
+    const gradientDirectionInput = document.getElementById('gradient-direction');
+    
+    if (slotGradientStartInput) slotGradientStartInput.value = localStorage.getItem('slotGradientStart') || '#9346ff';
+    if (slotGradientEndInput) slotGradientEndInput.value = localStorage.getItem('slotGradientEnd') || '#00e1ff';
+    if (buttonGradientStartInput) buttonGradientStartInput.value = localStorage.getItem('buttonGradientStart') || '#9346ff';
+    if (buttonGradientEndInput) buttonGradientEndInput.value = localStorage.getItem('buttonGradientEnd') || '#7c3aed';
+    if (sidebarGradientStartInput) sidebarGradientStartInput.value = localStorage.getItem('sidebarGradientStart') || '#1a1b2e';
+    if (sidebarGradientEndInput) sidebarGradientEndInput.value = localStorage.getItem('sidebarGradientEnd') || '#16213e';
+    if (gradientDirectionInput) gradientDirectionInput.value = localStorage.getItem('gradientDirection') || '135deg';
+    
+    // Load effect settings
+    const animatedGradientsToggle = document.getElementById('animated-gradients-toggle');
+    const glowEffectsToggle = document.getElementById('glow-effects-toggle');
+    
+    if (animatedGradientsToggle) animatedGradientsToggle.checked = localStorage.getItem('animatedGradientsEnabled') === 'true';
+    if (glowEffectsToggle) glowEffectsToggle.checked = localStorage.getItem('glowEffectsEnabled') === 'true';
   }
   
   // Background type switcher
@@ -4382,6 +4434,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const gambleAwareColor = document.getElementById('gamble-aware-color')?.value;
     const glassEffectToggle = document.getElementById('glass-effect-toggle')?.checked;
     
+    // New advanced color options
+    const slotTitleColor = document.getElementById('slot-title-color')?.value;
+    const slotBetColor = document.getElementById('slot-bet-color')?.value;
+    const slotWinColor = document.getElementById('slot-win-color')?.value;
+    const bonusHeaderColor = document.getElementById('bonus-header-color')?.value;
+    const moneyDisplayColor = document.getElementById('money-display-color')?.value;
+    
+    // New gradient options
+    const slotGradientStart = document.getElementById('slot-gradient-start')?.value;
+    const slotGradientEnd = document.getElementById('slot-gradient-end')?.value;
+    const buttonGradientStart = document.getElementById('button-gradient-start')?.value;
+    const buttonGradientEnd = document.getElementById('button-gradient-end')?.value;
+    const sidebarGradientStart = document.getElementById('sidebar-gradient-start')?.value;
+    const sidebarGradientEnd = document.getElementById('sidebar-gradient-end')?.value;
+    const gradientDirection = document.getElementById('gradient-direction')?.value || '135deg';
+    
+    // New effect toggles
+    const animatedGradientsToggle = document.getElementById('animated-gradients-toggle')?.checked;
+    const glowEffectsToggle = document.getElementById('glow-effects-toggle')?.checked;
+    
     // Apply streamer name
     if (streamerName) {
       const streamerNameSpan = document.getElementById('streamer-name');
@@ -4415,6 +4487,30 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('customGambleAwareColor', gambleAwareColor);
     localStorage.setItem('glassEffectEnabled', glassEffectToggle);
     
+    // Save advanced colors
+    localStorage.setItem('slotTitleColor', slotTitleColor);
+    localStorage.setItem('slotBetColor', slotBetColor);
+    localStorage.setItem('slotWinColor', slotWinColor);
+    localStorage.setItem('bonusHeaderColor', bonusHeaderColor);
+    localStorage.setItem('moneyDisplayColor', moneyDisplayColor);
+    
+    // Save gradient settings
+    localStorage.setItem('slotGradientStart', slotGradientStart);
+    localStorage.setItem('slotGradientEnd', slotGradientEnd);
+    localStorage.setItem('buttonGradientStart', buttonGradientStart);
+    localStorage.setItem('buttonGradientEnd', buttonGradientEnd);
+    localStorage.setItem('sidebarGradientStart', sidebarGradientStart);
+    localStorage.setItem('sidebarGradientEnd', sidebarGradientEnd);
+    localStorage.setItem('gradientDirection', gradientDirection);
+    
+    // Save effect settings
+    localStorage.setItem('animatedGradientsEnabled', animatedGradientsToggle);
+    localStorage.setItem('glowEffectsEnabled', glowEffectsToggle);
+    
+    // Apply advanced customizations
+    applyAdvancedCustomization();
+    
+    
     // Re-apply background image if it exists (after color scheme application)
     const savedBackgroundImage = localStorage.getItem('customBackgroundImage');
     if (savedBackgroundImage) {
@@ -4425,6 +4521,97 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     customizationPanel.style.display = 'none';
+  }
+  
+  function applyAdvancedCustomization() {
+    // Get saved values
+    const slotTitleColor = localStorage.getItem('slotTitleColor') || '#ffffff';
+    const slotBetColor = localStorage.getItem('slotBetColor') || '#00e1ff';
+    const slotWinColor = localStorage.getItem('slotWinColor') || '#4ade80';
+    const bonusHeaderColor = localStorage.getItem('bonusHeaderColor') || '#ffffff';
+    const moneyDisplayColor = localStorage.getItem('moneyDisplayColor') || '#00e1ff';
+    
+    const slotGradientStart = localStorage.getItem('slotGradientStart') || '#9346ff';
+    const slotGradientEnd = localStorage.getItem('slotGradientEnd') || '#00e1ff';
+    const buttonGradientStart = localStorage.getItem('buttonGradientStart') || '#9346ff';
+    const buttonGradientEnd = localStorage.getItem('buttonGradientEnd') || '#7c3aed';
+    const sidebarGradientStart = localStorage.getItem('sidebarGradientStart') || '#1a1b2e';
+    const sidebarGradientEnd = localStorage.getItem('sidebarGradientEnd') || '#16213e';
+    const gradientDirection = localStorage.getItem('gradientDirection') || '135deg';
+    
+    const animatedGradients = localStorage.getItem('animatedGradientsEnabled') === 'true';
+    const glowEffects = localStorage.getItem('glowEffectsEnabled') === 'true';
+    
+    // Create or update advanced styles
+    let advancedStyle = document.getElementById('advanced-customization-styles');
+    if (!advancedStyle) {
+      advancedStyle = document.createElement('style');
+      advancedStyle.id = 'advanced-customization-styles';
+      document.head.appendChild(advancedStyle);
+    }
+    
+    advancedStyle.textContent = `
+      /* Advanced Font Colors */
+      .slot-title, .slot-card-modern .slot-title {
+        color: ${slotTitleColor} !important;
+      }
+      
+      .metric-value.bet-metric, .slot-card-modern .metric-value.bet-metric {
+        background: linear-gradient(${gradientDirection}, ${slotBetColor}, ${adjustColor(slotBetColor, -20)}) !important;
+        color: #ffffff !important;
+      }
+      
+      .metric-value.win-metric, .slot-card-modern .metric-value.win-metric {
+        background: linear-gradient(${gradientDirection}, ${slotWinColor}, ${adjustColor(slotWinColor, -20)}) !important;
+        color: #ffffff !important;
+      }
+      
+      .bonus-list h4, .bonus-list-header {
+        color: ${bonusHeaderColor} !important;
+      }
+      
+      .money-display, .current-money, .start-money, .stop-money {
+        color: ${moneyDisplayColor} !important;
+      }
+      
+      /* Custom Gradients */
+      .slot-card-modern, .bonus-list li {
+        background: linear-gradient(${gradientDirection}, 
+          rgba(${hexToRgb(slotGradientStart).r}, ${hexToRgb(slotGradientStart).g}, ${hexToRgb(slotGradientStart).b}, 0.08) 0%, 
+          rgba(${hexToRgb(slotGradientEnd).r}, ${hexToRgb(slotGradientEnd).g}, ${hexToRgb(slotGradientEnd).b}, 0.05) 100%) !important;
+      }
+      
+      .middle-btn, .sidebar-btn, .custom-apply-btn {
+        background: linear-gradient(${gradientDirection}, ${buttonGradientStart}, ${buttonGradientEnd}) !important;
+      }
+      
+      .sidebar {
+        background: linear-gradient(${gradientDirection}, ${sidebarGradientStart}, ${sidebarGradientEnd}) !important;
+      }
+      
+      ${animatedGradients ? `
+      .slot-card-modern, .bonus-list li {
+        background-size: 200% 200% !important;
+        animation: gradientAnimation 4s ease infinite !important;
+      }
+      
+      @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      ` : ''}
+      
+      ${glowEffects ? `
+      .slot-card-modern:hover, .bonus-list li:hover {
+        box-shadow: 0 0 20px rgba(${hexToRgb(slotGradientStart).r}, ${hexToRgb(slotGradientStart).g}, ${hexToRgb(slotGradientStart).b}, 0.5) !important;
+      }
+      
+      .middle-btn:hover, .sidebar-btn:hover {
+        box-shadow: 0 0 15px rgba(${hexToRgb(buttonGradientStart).r}, ${hexToRgb(buttonGradientStart).g}, ${hexToRgb(buttonGradientStart).b}, 0.4) !important;
+      }
+      ` : ''}
+    `;
   }
   
   function applyBackgroundImage(imageSrc) {
@@ -4559,6 +4746,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (primaryColor && accentColor && backgroundColor && textColor) {
         applyUIColors(primaryColor, accentColor, backgroundColor, textColor);
       }
+      // Apply advanced customizations
+      applyAdvancedCustomization();
       // Re-apply background image after UI colors to ensure it's not overridden
       if (backgroundImage) {
         console.log('Re-applying background image after UI color update...');
@@ -4816,7 +5005,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Spotify configuration - REPLACE WITH YOUR OWN CREDENTIALS
   const SPOTIFY_CONFIG = {
-    CLIENT_ID: 'YOUR_SPOTIFY_CLIENT_ID', // Replace with your Spotify app client ID
+    CLIENT_ID: '0781de806d9b44eab64983415502bfe8', // Replace with your Spotify app client ID
     REDIRECT_URI: window.location.origin + window.location.pathname, // Current page URL
     SCOPES: 'user-read-currently-playing user-read-playback-state'
   };
