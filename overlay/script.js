@@ -1199,10 +1199,25 @@ document.addEventListener('DOMContentLoaded', () => {
           // Create new list item with image and highlight classes
           const li = document.createElement('li');
           li.innerHTML = `
-            <img src="${imgSrc}" alt="${slotName}" class="slot-img">
-            <span class="slot-name">${slotName}</span>
-            <span class="slot-payout">--</span>
-            <span class="slot-bet">€${parseFloat(betSize).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+            <div class="slot-card-modern">
+              <div class="slot-image-container">
+                <img src="${imgSrc}" alt="${slotName}" class="slot-img-full">
+              </div>
+              <div class="slot-content">
+                <div class="slot-title">${slotName}</div>
+                <div class="slot-metrics">
+                  <div class="metric-item bet-metric">
+                    <div class="metric-value">€${parseFloat(betSize).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    <div class="metric-label">BET</div>
+                  </div>
+                  <div class="metric-divider"></div>
+                  <div class="metric-item payout-metric">
+                    <div class="metric-value payout-value pending">--</div>
+                    <div class="metric-label">WIN</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           `;
           // Highlight if super checkbox is checked
           if (superCheckbox && superCheckbox.checked) {
@@ -1384,9 +1399,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (li.dataset && li.dataset.payout) {
               result = parseFloat(li.dataset.payout) || 0;
             } else {
-              const payoutSpan = li.querySelector('.slot-payout');
-              if (payoutSpan && payoutSpan.textContent !== '--') {
-                const payoutText = payoutSpan.textContent.replace(/[^\d.]/g, '');
+              const payoutValue = li.querySelector('.payout-value');
+              if (payoutValue && payoutValue.textContent !== '--') {
+                const payoutText = payoutValue.textContent.replace(/[^\d.]/g, '');
                 result = parseFloat(payoutText) || 0;
               }
             }
@@ -1464,15 +1479,22 @@ document.addEventListener('DOMContentLoaded', () => {
           // Store payout data
           li.dataset.payout = safePayout.toString();
           
-          // Update payout display span
-          const payoutSpan = li.querySelector('.slot-payout');
-          if (payoutSpan) {
+          // Update payout display with new structure
+          const payoutValue = li.querySelector('.payout-value');
+          if (payoutValue) {
+            // Remove pending class since we're setting a value
+            payoutValue.classList.remove('pending');
+            
             if (safePayout > 0) {
-              payoutSpan.textContent = `€${safePayout.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-              payoutSpan.style.color = '#00ffb8'; // Green for positive payout
+              payoutValue.textContent = `€${safePayout.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+              payoutValue.style.color = '#00ffb8';
+              payoutValue.style.background = 'linear-gradient(135deg, rgba(0, 255, 184, 0.25) 0%, rgba(0, 255, 184, 0.15) 100%)';
+              payoutValue.style.borderColor = 'rgba(0, 255, 184, 0.4)';
             } else {
-              payoutSpan.textContent = '€0.00';
-              payoutSpan.style.color = '#ff5c5c'; // Red for zero payout
+              payoutValue.textContent = '€0.00';
+              payoutValue.style.color = '#ff5c5c';
+              payoutValue.style.background = 'linear-gradient(135deg, rgba(255, 92, 92, 0.25) 0%, rgba(255, 92, 92, 0.15) 100%)';
+              payoutValue.style.borderColor = 'rgba(255, 92, 92, 0.4)';
             }
           }
         }
@@ -1547,6 +1569,32 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- Professional Carousel Animation for Bonus List ---
+  
+  function createDynamicCarouselAnimation(animationName, itemCount) {
+    // Remove existing animation if it exists
+    const existingStyle = document.getElementById(animationName);
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+    
+    // For seamless infinite scroll with duplicated content:
+    // Move exactly 50% to transition from originals to duplicates
+    let keyframes = `@keyframes ${animationName} {
+      0% { 
+        transform: translateY(0%); 
+      }
+      100% { 
+        transform: translateY(-50%); 
+      }
+    }`;
+    
+    // Inject the animation into the page
+    const styleElement = document.createElement('style');
+    styleElement.id = animationName;
+    styleElement.textContent = keyframes;
+    document.head.appendChild(styleElement);
+  }
+  
   function setupBonusListCarousel() {
     const bonusListUl = document.querySelector('.bonus-list ul');
     if (!bonusListUl) return;
@@ -1558,17 +1606,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const items = Array.from(bonusListUl.children).filter(li => !li.classList.contains('carousel-clone'));
     if (items.length === 0) return;
 
-    // Clone all original li elements and append for seamless loop
+    // Simply append clones directly to the ul for seamless loop  
     items.forEach(li => {
       const clone = li.cloneNode(true);
       clone.classList.add('carousel-clone');
-      // Add a subtle opacity to clones to enhance the looping effect
-      clone.style.opacity = '0.95';
       bonusListUl.appendChild(clone);
     });
-
-    // Add smooth scroll behavior
-    bonusListUl.style.scrollBehavior = 'smooth';
+    
+    // Ensure all items have consistent styling
+    const allItems = Array.from(bonusListUl.children);
+    allItems.forEach(item => {
+      item.style.flexShrink = '0';
+      item.style.minHeight = 'auto';
+    });
   }
 
   function updateBonusListCarousel() {
@@ -1579,20 +1629,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Only count original items (not clones)
     const itemCount = Array.from(bonusListUl.children).filter(li => !li.classList.contains('carousel-clone')).length;
     
-    // Professional timing: slower for better readability, adaptive to content
-    let duration;
-    if (itemCount <= 3) {
-      // Fewer items: slower, more graceful movement
-      duration = Math.max(15, itemCount * 5);
-      bonusListUl.style.animationName = 'bonus-carousel-few-items';
-    } else {
-      // More items: standard professional speed
-      duration = Math.max(18, itemCount * 3);
-      bonusListUl.style.animationName = 'bonus-carousel-smooth';
+    if (itemCount === 0) {
+      bonusListUl.style.animation = 'none';
+      return;
     }
     
+    // Create dynamic keyframes based on actual item count
+    const animationName = `bonus-carousel-${itemCount}-items`;
+    createDynamicCarouselAnimation(animationName, itemCount);
+    
+    // Consistent timing for smooth rhythm
+    const duration = 20; // Fixed duration for consistent rhythm
+    
+    bonusListUl.style.animationName = animationName;
     bonusListUl.style.animationDuration = duration + 's';
-    bonusListUl.style.animationTimingFunction = 'cubic-bezier(0.4, 0.0, 0.6, 1)';
+    bonusListUl.style.animationTimingFunction = 'linear';
+    bonusListUl.style.animationIterationCount = 'infinite';
+    bonusListUl.style.animationPlayState = 'running';
     
     // Add intersection observer for performance optimization
     if ('IntersectionObserver' in window) {
