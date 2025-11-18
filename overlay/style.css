@@ -1,6 +1,39 @@
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Hide star animations when custom background is applied */
+body.custom-background::before,
+body.custom-background::after {
+  display: none !important;
+}
+
+/* Hide sidebar container and button backgrounds for custom themes */
+body.custom-theme .sidebar {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+body.custom-theme .sidebar-main-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 50% !important;
+}
+
+body.custom-theme .sidebar-main-btn:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 50% !important;
+}
+
+body.custom-theme .sidebar-main-btn.active {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 50% !important;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', Arial, sans-serif;
@@ -182,9 +215,9 @@ body::after {
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.3),
     0 1px 0 rgba(255, 255, 255, 0.1) inset;
-  padding: 8px 40px;
+  padding: 2px 40px;
   margin: 0.5rem 1.5rem 0.5rem 1.5rem;
-  min-height: 40px;
+  min-height: 60px;
   width: calc(95% - 3rem);
   position: relative;
   z-index: 10;
@@ -197,13 +230,14 @@ body::after {
 }
 
 .navbar-logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   background: rgba(147, 70, 255, 0.2);
   box-shadow: 0 4px 16px rgba(147, 70, 255, 0.3);
   border: 2px solid rgba(147, 70, 255, 0.5);
   transition: all 0.3s ease;
+  margin: -8px 0;
 }
 
 .navbar-logo:hover {
@@ -243,7 +277,7 @@ body::after {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.5px;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.95);
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.6rem 1.2rem;
   border-radius: 12px;
@@ -318,20 +352,22 @@ body::after {
   top: 50%;
   transform: translateY(-50%);
   z-index: 5000;
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 /* Main circular button */
 .sidebar-main-btn {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  background: rgba(30, 30, 30, 0.9);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(147, 70, 255, 0.3);
+  background: transparent;
+  border: none;
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -340,31 +376,61 @@ body::after {
   position: relative;
 }
 
+/* Remove circular overlay - no longer needed */
+.sidebar-main-btn::after {
+  display: none;
+}
+
 .sidebar-main-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.5),
-    0 0 30px rgba(147, 70, 255, 0.5);
+  transform: scale(1.1);
+  box-shadow: none;
+}
+
+.sidebar-main-btn:hover::after {
+  display: none;
 }
 
 .sidebar-main-btn.active {
-  background: rgba(147, 70, 255, 0.8);
-  box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(147, 70, 255, 0.7);
+  background: transparent;
+  box-shadow: none;
 }
 
-/* Plus icon */
+.sidebar-main-btn.active::after {
+  display: none;
+}
+
+/* Main circle image */
 .sidebar-main-btn::before {
-  content: '+';
-  font-size: 28px;
-  font-weight: 300;
-  color: #fff;
+  content: '';
+  width: 60px;
+  height: 60px;
+  background-image: url('../assets/maincircle.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
+  animation: spin-seamless 4s linear infinite;
+}
+
+@keyframes spin-seamless {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .sidebar-main-btn.active::before {
   transform: rotate(45deg);
+}
+
+/* Hide main circle when sidebar is open */
+.sidebar.open .sidebar-main-btn::before {
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* Fan container */
@@ -381,8 +447,8 @@ body::after {
 /* Individual fan buttons */
 .sidebar-btn {
   position: absolute;
-  width: 45px;
-  height: 45px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   background: rgba(30, 30, 30, 0.9);
 
@@ -399,6 +465,7 @@ body::after {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 10;
 }
 
 .sidebar-btn:hover {
@@ -421,33 +488,38 @@ body::after {
 }
 
 .sidebar.open .sidebar-btn:nth-child(1) {
-  transform: translate(-50%, -50%) translate(0, -85px);
+  transform: translate(-50%, -50%) translate(0, -110px);
   transition-delay: 0.1s;
 }
 
 .sidebar.open .sidebar-btn:nth-child(2) {
-  transform: translate(-50%, -50%) translate(74px, -42px);
+  transform: translate(-50%, -50%) translate(95px, -55px);
   transition-delay: 0.2s;
 }
 
 .sidebar.open .sidebar-btn:nth-child(3) {
-  transform: translate(-50%, -50%) translate(74px, 42px);
+  transform: translate(-50%, -50%) translate(95px, 55px);
   transition-delay: 0.3s;
 }
 
 .sidebar.open .sidebar-btn:nth-child(4) {
-  transform: translate(-50%, -50%) translate(0, 85px);
+  transform: translate(-50%, -50%) translate(0, 110px);
   transition-delay: 0.4s;
 }
 
 .sidebar.open .sidebar-btn:nth-child(5) {
-  transform: translate(-50%, -50%) translate(-74px, 42px);
+  transform: translate(-50%, -50%) translate(-95px, 55px);
   transition-delay: 0.5s;
 }
 
 .sidebar.open .sidebar-btn:nth-child(6) {
-  transform: translate(-50%, -50%) translate(-74px, -42px);
+  transform: translate(-50%, -50%) translate(-95px, -55px);
   transition-delay: 0.6s;
+}
+
+.sidebar.open .sidebar-btn:nth-child(7) {
+  transform: translate(-50%, -50%) translate(0, 0);
+  transition-delay: 0.0s;
 }
 
 /* Lock button specific styling */
@@ -517,21 +589,20 @@ body::after {
   align-items: center;
   gap: 0.1rem;
   /* Modern glass button */
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: none;
   color: #ffffff;
   border-radius: 50%;
   padding: 1rem 0.4rem;
   width: 88px;
   height: 88px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
   font-size: 1.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   justify-content: center;
-  border: 2px solid #23243a;
 }
 .sidebar-btn:hover, .sidebar-btn.active {
   background: rgba(147, 70, 255, 0.3);
@@ -543,8 +614,8 @@ body::after {
 
 /* Updated sidebar icon styles for circular design */
 .sidebar-icon-img {
-  width: 24px;
-  height: 24px;
+  width: 88px;
+  height: 88px;
   object-fit: contain;
   transition: all 0.3s ease;
   filter: brightness(1.2);
@@ -553,6 +624,16 @@ body::after {
 .sidebar-btn:hover .sidebar-icon-img {
   scale: 1.1;
   filter: brightness(1.4);
+}
+
+/* Lock icon specific centering */
+#lock-icon {
+  display: block;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Tooltip styling */

@@ -18,6 +18,20 @@ function adjustColor(color, amount) {
 }
 
 function applyUIColors(primary, accent, background, text) {
+  // Add custom theme class to body to enable custom styling
+  document.body.classList.add('custom-theme');
+  
+  // Get all settings first before using them
+  const cardBackgroundColor = localStorage.getItem('customCardBackground') || adjustColor(background, 15);
+  const streamerNameColor = localStorage.getItem('customStreamerNameColor') || accent;
+  const websiteColor = localStorage.getItem('customWebsiteColor') || primary;
+  const gambleAwareColor = localStorage.getItem('customGambleAwareColor') || '#ff6b6b';
+  
+  // Glass effect settings - declare these first
+  const glassEnabled = localStorage.getItem('glassEffectEnabled') === 'true';
+  const glassOpacity = localStorage.getItem('glassOpacity') || '0.3';
+  const glassBlur = localStorage.getItem('glassBlur') || '10';
+  
   // Sidebar styling
   const sidebar = document.querySelector('.sidebar');
   const sidebarButtons = document.querySelectorAll('.sidebar-btn');
@@ -31,8 +45,10 @@ function applyUIColors(primary, accent, background, text) {
   }
   
   if (sidebarToggle) {
-    sidebarToggle.style.background = `linear-gradient(135deg, ${primary} 0%, ${adjustColor(primary, -20)} 100%)`;
-    sidebarToggle.style.borderColor = accent;
+    // Hide the square background for custom themes
+    sidebarToggle.style.background = 'transparent';
+    sidebarToggle.style.border = 'none';
+    sidebarToggle.style.boxShadow = 'none';
   }
   
   sidebarButtons.forEach(btn => {
@@ -66,7 +82,7 @@ function applyUIColors(primary, accent, background, text) {
     if (glassEnabled) {
       currentTimeElement.style.background = `rgba(255, 255, 255, ${parseFloat(glassOpacity) + 0.1})`;
     } else {
-      currentTimeElement.style.background = `rgba(255, 255, 255, 0.95)`;
+      currentTimeElement.style.background = `transparent`;
     }
   }
   
@@ -79,17 +95,6 @@ function applyUIColors(primary, accent, background, text) {
       websiteButton.style.background = `rgb(${hexToRgb(websiteColor).r}, ${hexToRgb(websiteColor).g}, ${hexToRgb(websiteColor).b})`;
     }
   }
-  
-  // Get custom colors
-  const cardBackgroundColor = localStorage.getItem('customCardBackground') || adjustColor(background, 15);
-  const streamerNameColor = localStorage.getItem('customStreamerNameColor') || accent;
-  const websiteColor = localStorage.getItem('customWebsiteColor') || primary;
-  const gambleAwareColor = localStorage.getItem('customGambleAwareColor') || '#ff6b6b';
-  
-  // Glass effect settings
-  const glassEnabled = localStorage.getItem('glassEffectEnabled') === 'true';
-  const glassOpacity = localStorage.getItem('glassOpacity') || '0.3';
-  const glassBlur = localStorage.getItem('glassBlur') || '10';
   
   // Navbar text elements with custom colors
   const streamerName = document.getElementById('streamer-name');
@@ -153,8 +158,11 @@ function applyColorScheme(primary, accent, background, text) {
   root.style.setProperty('--background-color', background);
   root.style.setProperty('--text-color', text);
   
-  // Apply background
-  document.body.style.background = `linear-gradient(135deg, ${background} 0%, ${adjustColor(background, 20)} 100%)`;
+  // Apply background only if no custom background image is set
+  const savedBackgroundImage = localStorage.getItem('customBackgroundImage');
+  if (!savedBackgroundImage) {
+    document.body.style.background = `linear-gradient(135deg, ${background} 0%, ${adjustColor(background, 20)} 100%)`;
+  }
   
   // Apply colors to all UI elements
   applyUIColors(primary, accent, background, text);
@@ -3590,7 +3598,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (lockBtn && lockIcon) {
     lockBtn.addEventListener('click', () => {
       window.isDragLocked = !window.isDragLocked;
-      lockIcon.textContent = window.isDragLocked ? '🔒' : '🔓';
+      lockIcon.src = window.isDragLocked ? '../assets/lock.png' : '../assets/unlock.png';
       
       // Visual feedback
       lockBtn.classList.toggle('active', window.isDragLocked);
@@ -3755,42 +3763,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // File upload handlers
-  const customLogoBtn = document.getElementById('custom-logo-btn');
-  const customLogoFile = document.getElementById('custom-logo-file');
-  const customBgBtn = document.getElementById('custom-bg-btn');
-  const customBgFile = document.getElementById('custom-bg-file');
-  
-  if (customLogoBtn && customLogoFile) {
-    customLogoBtn.addEventListener('click', () => customLogoFile.click());
-    customLogoFile.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          localStorage.setItem('customNavbarLogo', evt.target.result);
-          const navbarLogo = document.getElementById('navbar-logo');
-          if (navbarLogo) navbarLogo.src = evt.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-  
-  if (customBgBtn && customBgFile) {
-    customBgBtn.addEventListener('click', () => customBgFile.click());
-    customBgFile.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          localStorage.setItem('customBackgroundImage', evt.target.result);
-          applyBackgroundImage(evt.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
+  // File upload handlers will be initialized in the delayed customization setup
   
   // Apply customization
   const applyBtn = document.getElementById('apply-customization');
@@ -3814,7 +3787,16 @@ document.addEventListener('DOMContentLoaded', () => {
   if (resetBgBtn) {
     resetBgBtn.addEventListener('click', () => {
       localStorage.removeItem('customBackgroundImage');
-      document.body.style.backgroundImage = '';
+      // Remove custom background class to restore star animations
+      document.body.classList.remove('custom-background');
+      // Clear custom background styles
+      document.body.style.removeProperty('background');
+      document.body.style.removeProperty('background-image');
+      document.body.style.removeProperty('background-size');
+      document.body.style.removeProperty('background-position');
+      document.body.style.removeProperty('background-repeat');
+      document.body.style.removeProperty('background-attachment');
+      console.log('Background reset to default');
     });
   }
   
@@ -3830,6 +3812,9 @@ document.addEventListener('DOMContentLoaded', () => {
           'customGambleAwareColor', 'glassEffectEnabled', 'glassOpacity', 'glassBlur'
         ];
         customKeys.forEach(key => localStorage.removeItem(key));
+        
+        // Remove custom theme class to restore default styling
+        document.body.classList.remove('custom-theme');
         
         // Reload page to apply defaults
         location.reload();
@@ -3895,14 +3880,70 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('customGambleAwareColor', gambleAwareColor);
     localStorage.setItem('glassEffectEnabled', glassEffectToggle);
     
+    // Re-apply background image if it exists (after color scheme application)
+    const savedBackgroundImage = localStorage.getItem('customBackgroundImage');
+    if (savedBackgroundImage) {
+      setTimeout(() => {
+        applyBackgroundImage(savedBackgroundImage);
+        console.log('Background image re-applied after customization');
+      }, 100);
+    }
+    
     customizationPanel.style.display = 'none';
   }
   
   function applyBackgroundImage(imageSrc) {
-    document.body.style.backgroundImage = `url(${imageSrc})`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
-    document.body.style.backgroundAttachment = 'fixed';
+    console.log('Applying background image:', imageSrc ? 'Image data found' : 'No image data');
+    
+    if (!imageSrc) {
+      console.warn('No image source provided to applyBackgroundImage');
+      return;
+    }
+    
+    // Add a class to body to hide star animations
+    document.body.classList.add('custom-background');
+    
+    // Clear any existing background first and use setProperty with important
+    document.body.style.setProperty('background', '', 'important');
+    document.body.style.setProperty('background-color', '', 'important');
+    
+    // Apply the background image with !important to override CSS
+    document.body.style.setProperty('background-image', `url("${imageSrc}")`, 'important');
+    document.body.style.setProperty('background-size', 'cover', 'important');
+    document.body.style.setProperty('background-position', 'center', 'important');
+    document.body.style.setProperty('background-repeat', 'no-repeat', 'important');
+    document.body.style.setProperty('background-attachment', 'fixed', 'important');
+    
+    // Force a repaint to ensure the background shows immediately
+    document.body.offsetHeight;
+    
+    console.log('Background image applied successfully with !important');
+    
+    // Provide visual feedback that the background was applied
+    const customizationPanel = document.getElementById('customization-panel');
+    if (customizationPanel && customizationPanel.style.display === 'flex') {
+      // Show a brief success message
+      const successMsg = document.createElement('div');
+      successMsg.textContent = 'Background applied successfully!';
+      successMsg.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 225, 255, 0.9);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: 600;
+        z-index: 10000;
+        transition: opacity 0.3s ease;
+      `;
+      document.body.appendChild(successMsg);
+      
+      setTimeout(() => {
+        successMsg.style.opacity = '0';
+        setTimeout(() => successMsg.remove(), 300);
+      }, 2000);
+    }
   }
   
   function applyThemePreset(theme) {
@@ -3959,17 +4000,22 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Load saved customizations on page load
   function loadSavedCustomizations() {
+    console.log('Loading saved customizations...');
     const primaryColor = localStorage.getItem('customPrimaryColor');
     const accentColor = localStorage.getItem('customAccentColor');
     const backgroundColor = localStorage.getItem('customBackgroundColor');
     const textColor = localStorage.getItem('customTextColor');
     const backgroundImage = localStorage.getItem('customBackgroundImage');
     
+    console.log('Saved background image found:', !!backgroundImage);
+    
     if (primaryColor && accentColor && backgroundColor && textColor) {
+      console.log('Applying saved color scheme...');
       applyColorScheme(primaryColor, accentColor, backgroundColor, textColor);
     }
     
     if (backgroundImage) {
+      console.log('Applying saved background image...');
       applyBackgroundImage(backgroundImage);
     }
     
@@ -3977,6 +4023,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       if (primaryColor && accentColor && backgroundColor && textColor) {
         applyUIColors(primaryColor, accentColor, backgroundColor, textColor);
+      }
+      // Re-apply background image after UI colors to ensure it's not overridden
+      if (backgroundImage) {
+        console.log('Re-applying background image after UI color update...');
+        applyBackgroundImage(backgroundImage);
       }
     }, 500);
   }
@@ -4140,14 +4191,85 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       
-      // Apply saved color scheme on page load
-      const savedPrimary = localStorage.getItem('customPrimaryColor') || '#9346ff';
-      const savedAccent = localStorage.getItem('customAccentColor') || '#00e1ff';
-      const savedBackground = localStorage.getItem('customBackgroundColor') || '#1a1b2e';
-      const savedText = localStorage.getItem('customTextColor') || '#ffffff';
+      // Apply saved color scheme on page load only if customizations exist
+      const savedPrimary = localStorage.getItem('customPrimaryColor');
+      const savedAccent = localStorage.getItem('customAccentColor');
+      const savedBackground = localStorage.getItem('customBackgroundColor');
+      const savedText = localStorage.getItem('customTextColor');
       
-      // Apply the saved scheme immediately
-      applyColorScheme(savedPrimary, savedAccent, savedBackground, savedText);
+      // Only apply custom scheme if at least one custom color exists
+      if (savedPrimary || savedAccent || savedBackground || savedText) {
+        applyColorScheme(
+          savedPrimary || '#9346ff',
+          savedAccent || '#00e1ff', 
+          savedBackground || '#1a1b2e',
+          savedText || '#ffffff'
+        );
+      }
+      
+      // Restore background image if it exists (after color scheme application)
+      const savedBackgroundImage = localStorage.getItem('customBackgroundImage');
+      if (savedBackgroundImage) {
+        applyBackgroundImage(savedBackgroundImage);
+      }
+      
+      // Initialize file upload handlers with proper timing
+      const customLogoBtn = document.getElementById('custom-logo-btn');
+      const customLogoFile = document.getElementById('custom-logo-file');
+      const customBgBtn = document.getElementById('custom-bg-btn');
+      const customBgFile = document.getElementById('custom-bg-file');
+      
+      console.log('File upload elements found:', {
+        customLogoBtn: !!customLogoBtn,
+        customLogoFile: !!customLogoFile,
+        customBgBtn: !!customBgBtn,
+        customBgFile: !!customBgFile
+      });
+      
+      if (customLogoBtn && customLogoFile) {
+        customLogoBtn.addEventListener('click', () => customLogoFile.click());
+        customLogoFile.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              localStorage.setItem('customNavbarLogo', evt.target.result);
+              const navbarLogo = document.getElementById('navbar-logo');
+              if (navbarLogo) navbarLogo.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+      
+      if (customBgBtn && customBgFile) {
+        customBgBtn.addEventListener('click', () => customBgFile.click());
+        customBgFile.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file && file.type.startsWith('image/')) {
+            console.log('Background image file selected:', file.name);
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              console.log('Background image loaded, saving to localStorage');
+              const imageData = evt.target.result;
+              localStorage.setItem('customBackgroundImage', imageData);
+              
+              // Apply immediately with a small delay to ensure DOM is ready
+              setTimeout(() => {
+                applyBackgroundImage(imageData);
+                console.log('Background applied immediately after upload');
+              }, 100);
+            };
+            reader.onerror = (err) => {
+              console.error('Error reading background image file:', err);
+            };
+            reader.readAsDataURL(file);
+          } else {
+            console.log('Invalid file type selected for background image');
+            alert('Please select a valid image file (PNG, JPG, GIF, etc.)');
+          }
+        });
+      }
       
       console.log('Customization panel initialized successfully!');
     } else {
